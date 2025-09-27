@@ -1,7 +1,7 @@
 import re
 from telebot.types import Message, ReplyKeyboardRemove
 from loader import bot
-
+from keyboards.reply import phone_kb
 
 @bot.message_handler(content_types=["contact"])
 def handle_contact(message: Message):
@@ -18,7 +18,7 @@ def handle_contact(message: Message):
     bot.send_message(
         message.chat.id,
         f"Спасибо, {name}! Номер {phone} получил. Для завершения регистрации, заполните небольшую анкету: ",
-        reply_markup=ReplyKeyboardRemove()
+        reply_markup=phone_kb.remove_kb()
     )
 
 PHONE_RE = re.compile(r'^\+?\d[\d\-\s\(\)]{7,}$')
