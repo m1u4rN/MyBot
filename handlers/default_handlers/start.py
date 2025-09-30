@@ -21,4 +21,4 @@ def bot_start(message: Message):
     bot.send_message(message.chat.id, CAPTION, parse_mode="HTML")
 
 
-    bot.send_message(message.chat.id, HINT, reply_markup=phone.phone_request_kb(), parse_mode="HTML")
+    bot.send_message(message.chat.id, HINT, reply_markup=phone_kb.phone_request_kb(), parse_mode="HTML")

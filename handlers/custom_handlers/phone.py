@@ -1,7 +1,16 @@
 import re
-from telebot.types import Message, ReplyKeyboardRemove
+import os
+from telebot.types import Message, ReplyKeyboardRemove, InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 from loader import bot
 from keyboards.reply import phone_kb
+from database.db import (
+    get_client_by_user_id,
+    get_client_by_phone,
+    create_client,
+    update_client_user_id_for_phone,
+    format_amount,
+)
+
 
 @bot.message_handler(content_types=["contact"])
 def handle_contact(message: Message):
@@ -11,21 +20,48 @@ def handle_contact(message: Message):
         bot.reply_to(message, "Пожалуйста, отправьте свой номер через кнопку ниже.")
         return
 
+    user_id = message.from_user.id
     phone = c.phone_number
     name = c.first_name or message.from_user.first_name
 
-    # TODO: здесь можно сохранить phone в БД/CSV
-    bot.send_message(
-        message.chat.id,
-        f"Спасибо, {name}! Номер {phone} получил. Для завершения регистрации, заполните небольшую анкету: ",
-        reply_markup=phone_kb.remove_kb()
-    )
+    client = get_client_by_user_id(user_id)
+    if not client:
+        client = get_client_by_phone(phone)
+    if client:
+        if not client.get("user_id"):
+            update_client_user_id_for_phone(phone, user_id)
+    else:
+        create_client(
+            user_id=user_id,
+            phone=phone,
+            name=name,
+            email=None,
+            gender=None,
+            birth_date_iso=None,
+            bonus_balance=0.0,
+        )
+        bot.send_message(
+            message.chat.id,
+            f"Спасибо, {name}! Номер {phone} получил. Вы зарегистрированы.",
+            reply_markup=phone_kb.remove_kb()
+        )
 
+
+    webapp_url = os.getenv("WEBAPP_URL") or os.getenv("MINIAPP_URL")
+    if webapp_url:
+        kb = InlineKeyboardMarkup()
+        kb.add(InlineKeyboardButton("Заполнить анкету (мини-приложение)", web_app=WebAppInfo(url=webapp_url)))
+        bot.send_message(message.chat.id, "Для завершения регистрации откройте мини-приложение:", reply_markup=kb)
+    else:
+        bot.send_message(message.chat.id, "Скоро появится мини-приложение с анкетой — пришлю кнопку здесь.")
+
+
+# Если пользователь набрал номер ТЕКСТОМ — не сохраняем; просим отправить через кнопку
 PHONE_RE = re.compile(r'^\+?\d[\d\-\s\(\)]{7,}$')
+
+
 @bot.message_handler(func=lambda m: bool(m.text) and bool(PHONE_RE.match(m.text)))
 def handle_phone_text(message: Message):
-    digits = re.sub(r"\D", "", message.text)
-    if len(digits) == 11 and digits.startswith("8"):
-        digits = "7" + digits[1:]
-    phone = "+" + digits if not digits.startswith("+") else "+" + digits
-    bot.reply_to(message, f"Принял номер {phone}. В следующий раз удобнее по кнопке ☺️. Для завершения регистрации, заполните небольшую анкету: ")
+    bot.reply_to(
+        message,
+        "Лучше отправить номер через кнопку «Отправить номер телефона» — так Telegram подтверждает, что это ваш номер. ")
