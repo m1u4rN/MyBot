@@ -1,6 +1,7 @@
 import os
 import sqlite3
-from typing import Optional, Dict, Any, Tuple
+import random
+from typing import Optional, Dict, Any
 
 DB_PATH = os.path.join("data", "bot.db")
 
@@ -15,25 +16,28 @@ def _connect() -> sqlite3.Connection:
 
 
 def init_db() -> None:
-    """Создаёт таблицы, триггеры и добавляет недостающие столбцы."""
+    """Создаёт таблицу/триггеры и добавляет недостающие столбцы (миграция)."""
     with _connect() as conn:
+        # Базовая схема с новыми полями
         conn.execute(
             """
             CREATE TABLE IF NOT EXISTS clients (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER UNIQUE,                  -- Telegram ID пользователя
                 phone TEXT UNIQUE,                       -- телефон
-                name TEXT,                               -- имя для удобства
-                email TEXT,                              -- email (уникальность можно включить ниже)
-                gender TEXT,                             -- 'male'/'female'/'other' (или свой набор)
-                birth_date TEXT,                         -- 'YYYY-MM-DD' (ISO)
-                bonus_balance REAL NOT NULL DEFAULT 0.0, -- баланс в баллах
+                name TEXT,                               -- имя
+                email TEXT,                              -- email
+                gender TEXT,                             -- 'male'/'female'/'other'
+                birth_date TEXT,                         -- 'YYYY-MM-DD'
+                card_id TEXT UNIQUE,                     -- уникальная карта клиента (6 символов)
+                bonus_balance REAL NOT NULL DEFAULT 0.0, -- баланс
+                bonus_transactions TEXT NOT NULL DEFAULT '[]',  -- JSON-список движений
+                bonus_expirations  TEXT NOT NULL DEFAULT '[]',  -- JSON-список экспираций
                 created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
             """
         )
-
 
         conn.execute(
             """
@@ -45,27 +49,38 @@ def init_db() -> None:
             """
         )
 
+
+def generate_unique_card_id() -> str:
+    """Генерирует уникальный card_id (проверяет отсутствия коллизии в БД)."""
+    with _connect() as conn:
+        while True:
+            cand = random.randint(0, 999_999)
+            row = conn.execute("SELECT 1 FROM clients WHERE card_id = ?", (cand,)).fetchone()
+            if not row:
+                return cand
+
+
 def get_client_by_user_id(user_id: int) -> Optional[Dict[str, Any]]:
     with _connect() as conn:
-        row = conn.execute(
-            "SELECT * FROM clients WHERE user_id = ?", (user_id,)
-        ).fetchone()
+        row = conn.execute("SELECT * FROM clients WHERE user_id = ?", (user_id,)).fetchone()
         return dict(row) if row else None
 
 
 def get_client_by_phone(phone: str) -> Optional[Dict[str, Any]]:
     with _connect() as conn:
-        row = conn.execute(
-            "SELECT * FROM clients WHERE phone = ?", (phone,)
-        ).fetchone()
+        row = conn.execute("SELECT * FROM clients WHERE phone = ?", (phone,)).fetchone()
         return dict(row) if row else None
 
 
 def get_client_by_email(email: str) -> Optional[Dict[str, Any]]:
     with _connect() as conn:
-        row = conn.execute(
-            "SELECT * FROM clients WHERE email = ?", (email,)
-        ).fetchone()
+        row = conn.execute("SELECT * FROM clients WHERE email = ?", (email,)).fetchone()
+        return dict(row) if row else None
+
+
+def get_client_by_card_id(card_id: str) -> Optional[Dict[str, Any]]:
+    with _connect() as conn:
+        row = conn.execute("SELECT * FROM clients WHERE card_id = ?", (card_id,)).fetchone()
         return dict(row) if row else None
 
 
@@ -77,15 +92,19 @@ def create_client(
     gender: str = None,
     birth_date_iso: str = None,
     bonus_balance: float = 100.0,
+    card_id: str = generate_unique_card_id(),
 ) -> int:
-    """Создаёт клиента. Доп.поля можно не передавать (по умолчанию NULL)."""
+    """
+    Создаёт клиента.
+    """
+
     with _connect() as conn:
         cur = conn.execute(
             """
-            INSERT INTO clients (user_id, phone, name, bonus_balance, email, gender, birth_date)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO clients (user_id, phone, name, email, gender, birth_date, card_id, bonus_balance)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """,
-            (user_id, phone, name, bonus_balance, email, gender, birth_date_iso),
+            (user_id, phone, name, email, gender, birth_date_iso, card_id, bonus_balance),
         )
         return cur.lastrowid
 
