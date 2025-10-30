@@ -66,4 +66,234 @@
     .field label{
       position:absolute;left:14px;top:var(--label-rest-top);
       color:var(--muted);font-size:14px;pointer-events:none;transition:all .16s ease;
-      padding:0 2px; /* только для аккуратной оптики, без фона *
+      padding:0 2px; /* только для аккуратной оптики, без фона */
+    }
+    .control:focus,
+    .control:not(:placeholder-shown){background:rgba(14,23,42,.85)}
+    .control:focus{box-shadow:var(--shadow-neon);border-color:rgba(34,211,238,.45)}
+    .control:not(:placeholder-shown) ~ label{
+      top:var(--label-float-top);font-size:12px;color:var(--muted);text-shadow:none;
+    }
+    .control:focus ~ label{
+      top:var(--label-float-top);font-size:12px;color:var(--accent);text-shadow:0 0 14px rgba(34,211,238,.25);
+    }
+    .field.error .control{border-color:rgba(248,113,113,.6)!important;box-shadow:0 0 0 1px rgba(248,113,113,.55),0 0 22px rgba(248,113,113,.25)!important}
+
+    /* RADIO PILLS */
+    .pills{display:flex;gap:8px;flex-wrap:wrap}
+    .pill{position:relative;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);padding:10px 14px;cursor:pointer;user-select:none;transition:transform .08s ease,box-shadow .18s ease,border-color .18s ease,background .18s ease}
+    .pill:hover{border-color:rgba(255,255,255,.18)}
+    .pill input{position:absolute;inset:0;opacity:0}
+    .pill.active{background:linear-gradient(180deg, rgba(34,211,238,.18), rgba(167,139,250,.16));border-color:rgba(34,211,238,.65);box-shadow:var(--shadow-neon)}
+
+    /* SELECT (лейбл вынесен над полем) */
+    .field.select label.top-label{
+      position:static;display:block;margin:2px 0 6px 2px;font-size:12px;color:var(--muted)
+    }
+    .select-box{position:relative}
+    .select-box select{
+      appearance:none;-webkit-appearance:none;-moz-appearance:none;
+      background:var(--bg-1);color:inherit;border-radius:var(--radius);
+      border:1px solid rgba(255,255,255,.07);
+      padding:16px 42px 14px 14px;width:100%;
+      outline:none;transition:box-shadow .18s ease,border-color .18s ease,background .18s ease;
+    }
+    .select-box select:focus{box-shadow:var(--shadow-neon);border-color:rgba(34,211,238,.45);background:rgba(14,23,42,.85)}
+    .select-box .chev{position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none;opacity:.75}
+
+    /* CTA / FOOTER */
+    .actions{display:flex;gap:10px;justify-content:flex-end;padding-top:8px}
+    .btn{padding:12px 16px;border-radius:14px;border:1px solid transparent;cursor:pointer;font-weight:600;background:linear-gradient(180deg, rgba(34,211,238,.18), rgba(167,139,250,.16));color:var(--text);box-shadow:var(--shadow-neon);transition:box-shadow .18s ease,transform .06s ease,border-color .18s ease,background .18s}
+    .btn:hover{box-shadow:var(--shadow-neon-strong)}
+    .btn:active{transform:translateY(1px)}
+    .ghost{background:transparent;border-color:rgba(255,255,255,.12)}
+    .meta{opacity:.7;font-size:12px;text-align:center;margin:12px 0 6px}
+
+    .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(16px);background:rgba(19,29,56,.95);color:var(--text);border:1px solid rgba(34,211,238,.45);box-shadow:var(--shadow-neon);padding:10px 14px;border-radius:12px;opacity:0;transition:all .18s ease;z-index:50}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  </style>
+</head>
+<body>
+  <div class="backdrop" aria-hidden="true"></div>
+  <div class="wrap">
+    <main class="app">
+      <h1 class="title">Профиль</h1>
+
+      <form id="profileForm" class="card" novalidate>
+        <div class="grid">
+          <!-- Имя -->
+          <div class="field" id="f-firstname">
+            <input class="control" type="text" id="firstName" name="firstName" placeholder=" " autocomplete="given-name" required />
+            <label for="firstName">Имя</label>
+            <div class="error-msg">Укажите имя.</div>
+          </div>
+
+          <!-- Фамилия -->
+          <div class="field">
+            <input class="control" type="text" id="lastName" name="lastName" placeholder=" " autocomplete="family-name" />
+            <label for="lastName">Фамилия</label>
+          </div>
+
+          <!-- Отчество -->
+          <div class="field">
+            <input class="control" type="text" id="middleName" name="middleName" placeholder=" " />
+            <label for="middleName">Отчество</label>
+          </div>
+
+          <!-- Дата рождения -->
+          <div class="field" id="f-birth">
+            <input class="control" type="text" id="birthDate" name="birthDate" inputmode="numeric" placeholder=" " aria-describedby="birthHint" maxlength="10" required />
+            <label for="birthDate">Дата рождения</label>
+            <div class="hint" id="birthHint">Формат: ДД.ММ.ГГГГ</div>
+            <div class="error-msg">Укажите дату рождения в формате ДД.ММ.ГГГГ.</div>
+          </div>
+
+          <!-- Email -->
+          <div class="field" id="f-email">
+            <input class="control" type="email" id="email" name="email" placeholder=" " autocomplete="email" required />
+            <label for="email">Email</label>
+            <div class="error-msg">Введите корректный email.</div>
+          </div>
+
+          <!-- Пол -->
+          <div class="field" id="f-gender">
+            <span class="sr-only" id="genderLabel">Пол</span>
+            <div class="pills" role="radiogroup" aria-labelledby="genderLabel">
+              <label class="pill"><input type="radio" name="gender" value="male">Мужской</label>
+              <label class="pill"><input type="radio" name="gender" value="female">Женский</label>
+              <label class="pill"><input type="radio" name="gender" value="other">Другое</label>
+            </div>
+            <div class="error-msg">Выберите вариант.</div>
+          </div>
+
+          <!-- Откуда узнали (лейбл вынесен над полем) -->
+          <div class="field select">
+            <label for="source" class="top-label">Откуда вы узнали о нас?</label>
+            <div class="select-box">
+              <select id="source" name="source">
+                <option value="" selected disabled>Выберите вариант</option>
+                <option>Друзья/знакомые</option>
+                <option>Телеграм/чаты</option>
+                <option>Реклама</option>
+                <option>Проходил мимо</option>
+                <option>Другое</option>
+              </select>
+              <svg class="chev" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="btn ghost" id="clearBtn">Очистить</button>
+          <button type="submit" class="btn" id="saveBtn">Сохранить</button>
+        </div>
+      </form>
+
+      <div class="meta">@Vapes_Catalog_Bot</div>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">Сохранено ✓</div>
+
+  <script>
+    const $ = (s, p=document)=>p.querySelector(s)
+    const $$ = (s, p=document)=>[...p.querySelectorAll(s)]
+    const tg = window.Telegram ? window.Telegram.WebApp : null
+
+    function applyTelegramTheme(){
+      if(!tg || !tg.themeParams) return
+      const t = tg.themeParams
+      const root = document.documentElement.style
+      const bg = t.bg_color || '#0A0F1E'
+      const text = t.text_color || '#E5F0FF'
+      const hint = t.hint_color || '#91A4C7'
+      const button = t.button_color || '#22D3EE'
+      root.setProperty('--bg-0', bg)
+      root.setProperty('--text', text)
+      root.setProperty('--muted', hint)
+      root.setProperty('--accent', button)
+    }
+
+    function initPills(){
+      const group = $('#f-gender .pills')
+      group.addEventListener('change', () => {
+        $$('#f-gender .pill').forEach(l => l.classList.remove('active'))
+        const active = group.querySelector('input:checked')
+        if(active) active.parentElement.classList.add('active')
+        $('#f-gender').classList.remove('error')
+      })
+    }
+
+    function maskDateInput(el){
+      el.addEventListener('input', ()=>{
+        let v = el.value.replace(/\D/g,'').slice(0,8)
+        if(v.length >= 5) v = v.replace(/^(\d{2})(\d{2})(\d{1,4}).*/, '$1.$2.$3')
+        else if(v.length >= 3) v = v.replace(/^(\d{2})(\d{1,2}).*/, '$1.$2')
+        el.value = v
+        $('#f-birth').classList.remove('error')
+      })
+    }
+
+    function validate(form){
+      let ok = true
+      const first = $('#firstName')
+      if(!first.value.trim()){ $('#f-firstname').classList.add('error'); ok = false } else { $('#f-firstname').classList.remove('error') }
+
+      const bd = $('#birthDate')
+      const rexDate = /^([0-2]\d|3[01])\.(0\d|1[0-2])\.(19|20)\d{2}$/
+      if(!rexDate.test(bd.value.trim())){ $('#f-birth').classList.add('error'); ok = false } else { $('#f-birth').classList.remove('error') }
+
+      const em = $('#email')
+      const rexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
+      if(!rexEmail.test(em.value.trim())){ $('#f-email').classList.add('error'); ok = false } else { $('#f-email').classList.remove('error') }
+
+      if(!form.gender.value){ $('#f-gender').classList.add('error'); ok = false } else { $('#f-gender').classList.remove('error') }
+      return ok
+    }
+
+    function toast(msg='Сохранено ✓'){
+      const t = $('#toast'); t.textContent = msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 1600)
+    }
+
+    function setupTelegramMainButton(){
+      if(!tg) return
+      tg.ready(); tg.expand()
+      tg.MainButton.setParams({ text:'Сохранить', color:getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#22D3EE', text_color:'#0B1020' })
+      tg.MainButton.onClick(()=> $('#profileForm').requestSubmit())
+      tg.MainButton.show()
+      tg.onEvent('themeChanged', applyTelegramTheme)
+      applyTelegramTheme()
+    }
+
+    const form = $('#profileForm')
+    form.addEventListener('submit', (e)=>{
+      e.preventDefault()
+      if(!validate(form)) return
+      const data = {
+        firstName: form.firstName.value.trim(),
+        lastName: form.lastName.value.trim(),
+        middleName: form.middleName.value.trim(),
+        birthDate: form.birthDate.value.trim(),
+        email: form.email.value.trim(),
+        gender: form.gender.value,
+        source: form.source.value
+      }
+      if(tg){ tg.sendData(JSON.stringify({type:'profile', payload:data})) }
+      toast()
+    })
+
+    $('#clearBtn').addEventListener('click', ()=>{
+      form.reset()
+      $$('#profileForm .field').forEach(f=>f.classList.remove('error'))
+      $$('#f-gender .pill').forEach(l => l.classList.remove('active'))
+    })
+
+    maskDateInput($('#birthDate'))
+    initPills()
+    setupTelegramMainButton()
+  </script>
+</body>
+</html>
