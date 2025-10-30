@@ -7,69 +7,110 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <title>Vape Bot — Profile</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root{
-      --bg-0:#0A0F1E; --bg-1:#0F172A; --text:#E5F0FF; --muted:#91A4C7;
-      --accent:#22D3EE; --error:#F87171; --radius:16px;
+      --bg-0:#0A0F1E;
+      --bg-1:#0F172A;
+      --text:#E5F0FF;
+      --muted:#91A4C7;
+      --accent:#22D3EE;
+      --error:#F87171;
+      --radius:16px;
       --shadow-neon:0 0 0 1px rgba(34,211,238,.35),0 0 24px rgba(34,211,238,.2);
       --shadow-neon-strong:0 0 0 1px rgba(34,211,238,.65),0 0 32px rgba(34,211,238,.45);
     }
     *,*::before,*::after{box-sizing:border-box}
     html,body{height:100%}
-    body{margin:0;font-family:Inter,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg-0);color:var(--text);-webkit-font-smoothing:antialiased}
+    body{
+      margin:0; background:var(--bg-0); color:var(--text);
+      font-family:Inter,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif;
+      -webkit-font-smoothing:antialiased;
+    }
     button,input,select{font:inherit;color:inherit}
 
     .wrap{min-height:100%;display:flex;align-items:flex-start;justify-content:center;padding:24px}
-    .card{width:min(680px,100%);background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));
-      border-radius:calc(var(--radius) + 6px);padding:20px 20px 16px;
-      border:1px solid rgba(255,255,255,.06);box-shadow:0 8px 30px rgba(2,12,27,.55);backdrop-filter:blur(6px)}
+    .card{
+      width:min(680px,100%);
+      background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:calc(var(--radius) + 6px);
+      padding:20px 20px 16px;
+      box-shadow:0 8px 30px rgba(2,12,27,.55);
+      backdrop-filter:blur(6px);
+    }
     .grid{display:grid;gap:12px}
 
-    /* поля + плавающий лейбл без «плашки» */
+    /* ===== Поля и плавающие лейблы без «плашки» */
     .field{position:relative}
-    .control{width:100%;background:var(--bg-1);border-radius:var(--radius);
-      border:1px solid rgba(255,255,255,.07);padding:18px 14px 14px;outline:none;
-      transition:box-shadow .18s,border-color .18s,background .18s}
+    .control{
+      width:100%; background:var(--bg-1);
+      border-radius:var(--radius);
+      border:1px solid rgba(255,255,255,.07);
+      padding:18px 14px 14px;
+      outline:none;
+      transition:box-shadow .18s,border-color .18s,background .18s;
+    }
     .control::placeholder{color:transparent}
-    .field label{position:absolute;left:14px;top:16px;font-size:14px;color:var(--muted);
-      pointer-events:none;transition:all .16s;background:none;z-index:1}
+    .field label{
+      position:absolute; left:14px; top:16px;
+      font-size:14px; color:var(--muted);
+      pointer-events:none; background:none; z-index:1;
+      transition:all .16s ease;
+    }
     .control:focus,.control:not(:placeholder-shown){background:rgba(14,23,42,.85)}
     .control:focus{box-shadow:var(--shadow-neon);border-color:rgba(34,211,238,.45)}
-    .control:focus ~ label,.control:not(:placeholder-shown) ~ label{top:4px;font-size:12px;color:var(--accent)}
+    .control:focus ~ label,
+    .control:not(:placeholder-shown) ~ label{top:4px;font-size:12px;color:var(--accent)}
     .error-msg{margin-top:6px;font-size:12px;color:var(--error);display:none}
     .field.error .error-msg{display:block}
     .field.error .control{border-color:rgba(248,113,113,.6)!important;box-shadow:0 0 0 1px rgba(248,113,113,.55),0 0 22px rgba(248,113,113,.25)!important}
 
-    /* радиокнопки-пилюли */
-    .pills{display:flex;gap:8px;flex-wrap:wrap}
-    .pill{position:relative;border-radius:999px;background:rgba(255,255,255,.04);
-      border:1px solid rgba(255,255,255,.09);padding:10px 14px;cursor:pointer;
-      transition:box-shadow .18s,border-color .18s,background .18s}
-    .pill input{position:absolute;inset:0;opacity:0}
-    .pill.active{background:rgba(34,211,238,.16);border-color:rgba(34,211,238,.65);box-shadow:var(--shadow-neon)}
+    /* ===== Радио-пилюли (устойчиво в Telegram WebView) */
+    .pills{display:flex;flex-wrap:wrap;gap:8px;align-items:center;min-height:44px}
+    .pills .radio{
+      position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;
+      clip:rect(0 0 0 0);clip-path:inset(50%);overflow:hidden;white-space:nowrap;
+    }
+    .pill{
+      display:inline-flex;align-items:center;justify-content:center;
+      padding:10px 14px;border-radius:999px;cursor:pointer;user-select:none;
+      background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.09);
+      transition:box-shadow .18s,border-color .18s,background .18s,transform .06s;
+    }
+    .pill:hover{border-color:rgba(255,255,255,.18)}
+    .pills .radio:checked + .pill{
+      background:linear-gradient(180deg,rgba(34,211,238,.18),rgba(167,139,250,.16));
+      border-color:rgba(34,211,238,.65); box-shadow:var(--shadow-neon);
+    }
+    .pills .radio:focus + .pill{outline:2px solid var(--accent);outline-offset:2px}
 
-    /* селект: лейбл вынесен над полем, внутри .select-box никаких label */
+    /* ===== Select: лейбл вынесен вверх, внутри коробки никаких label */
     .field.select{margin-top:4px}
     .field.select .top-label{display:block;margin:0 0 6px 4px;font-size:12px;color:var(--muted);line-height:1}
     .select-box{position:relative}
     .select-box select{
-      position:relative;z-index:1; /* поверх всего в карточке */
-      width:100%;appearance:none;-webkit-appearance:none;-moz-appearance:none;
-      background:var(--bg-1);color:var(--text);border-radius:var(--radius);
-      border:1px solid rgba(255,255,255,.07);padding:16px 42px 14px 14px;outline:none;
+      position:relative; z-index:1;
+      width:100%; appearance:none; -webkit-appearance:none; -moz-appearance:none;
+      background:var(--bg-1); color:var(--text);
+      border-radius:var(--radius); border:1px solid rgba(255,255,255,.07);
+      padding:16px 42px 14px 14px; outline:none;
       transition:box-shadow .18s,border-color .18s,background .18s;
     }
     .select-box select:focus{box-shadow:var(--shadow-neon);border-color:rgba(34,211,238,.45);background:rgba(14,23,42,.85)}
     .select-box .chev{position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none;opacity:.75}
-    /* защита: если по ошибке где-то остался label внутри селекта — скрыть его */
-    .field.select .select-box > label{display:none !important}
+    .field.select .select-box>label{display:none!important} /* страховка от кэша */
 
+    /* ===== Кнопки */
     .actions{display:flex;gap:10px;justify-content:flex-end;padding-top:8px}
-    .btn{padding:12px 16px;border-radius:14px;border:1px solid transparent;cursor:pointer;font-weight:600;
-      background:linear-gradient(180deg,rgba(34,211,238,.18),rgba(167,139,250,.16));color:var(--text);box-shadow:var(--shadow-neon)}
+    .btn{
+      padding:12px 16px;border-radius:14px;border:1px solid transparent;cursor:pointer;font-weight:600;
+      background:linear-gradient(180deg,rgba(34,211,238,.18),rgba(167,139,250,.16)); color:var(--text);
+      box-shadow:var(--shadow-neon); transition:box-shadow .18s,transform .06s,border-color .18s,background .18s;
+    }
     .btn:hover{box-shadow:var(--shadow-neon-strong)}
+    .btn:active{transform:translateY(1px)}
     .ghost{background:transparent;border-color:rgba(255,255,255,.12)}
     .meta{opacity:.7;font-size:12px;text-align:center;margin:12px 0 6px}
   </style>
@@ -78,30 +119,31 @@
   <div class="wrap">
     <form id="profileForm" class="card" novalidate>
       <div class="grid">
+
         <div class="field" id="f-firstname">
-          <input class="control" type="text" id="firstName" placeholder=" " autocomplete="given-name" required />
+          <input class="control" type="text" id="firstName" name="firstName" placeholder=" " autocomplete="given-name" required />
           <label for="firstName">Имя</label>
           <div class="error-msg">Укажите имя.</div>
         </div>
 
         <div class="field">
-          <input class="control" type="text" id="lastName" placeholder=" " autocomplete="family-name" />
+          <input class="control" type="text" id="lastName" name="lastName" placeholder=" " autocomplete="family-name" />
           <label for="lastName">Фамилия</label>
         </div>
 
         <div class="field">
-          <input class="control" type="text" id="middleName" placeholder=" " />
+          <input class="control" type="text" id="middleName" name="middleName" placeholder=" " />
           <label for="middleName">Отчество</label>
         </div>
 
         <div class="field" id="f-birth">
-          <input class="control" type="text" id="birthDate" inputmode="numeric" placeholder=" " maxlength="10" required />
+          <input class="control" type="text" id="birthDate" name="birthDate" inputmode="numeric" placeholder=" " maxlength="10" required />
           <label for="birthDate">Дата рождения</label>
           <div class="error-msg">Формат: ДД.ММ.ГГГГ</div>
         </div>
 
         <div class="field" id="f-email">
-          <input class="control" type="email" id="email" placeholder=" " autocomplete="email" required />
+          <input class="control" type="email" id="email" name="email" placeholder=" " autocomplete="email" required />
           <label for="email">Email</label>
           <div class="error-msg">Введите корректный email.</div>
         </div>
@@ -109,10 +151,16 @@
         <div class="field" id="f-gender">
           <div class="top-label" id="genderLabel">Пол</div>
           <div class="pills" role="radiogroup" aria-labelledby="genderLabel">
-            <label class="pill"><input type="radio" name="gender" value="male">Мужской</label>
-            <label class="pill"><input type="radio" name="gender" value="female">Женский</label>
-            <label class="pill"><input type="radio" name="gender" value="other">Другое</label>
+            <input class="radio" type="radio" id="g_m" name="gender" value="male">
+            <label class="pill" for="g_m">Мужской</label>
+
+            <input class="radio" type="radio" id="g_f" name="gender" value="female">
+            <label class="pill" for="g_f">Женский</label>
+
+            <input class="radio" type="radio" id="g_o" name="gender" value="other">
+            <label class="pill" for="g_o">Другое</label>
           </div>
+          <div class="error-msg">Выберите вариант.</div>
         </div>
 
         <div class="field select">
@@ -131,6 +179,7 @@
             </svg>
           </div>
         </div>
+
       </div>
 
       <div class="actions">
@@ -143,21 +192,27 @@
   </div>
 
   <script>
-    const $ = (s,p=document)=>p.querySelector(s);
+    const $  = (s,p=document)=>p.querySelector(s);
     const $$ = (s,p=document)=>[...p.querySelectorAll(s)];
     const tg = window.Telegram?.WebApp;
 
-    if(tg){ tg.ready(); tg.expand(); }
+    // Телеграм тема → CSS переменные
+    function applyTelegramTheme(){
+      if(!tg || !tg.themeParams) return;
+      const t = tg.themeParams, r = document.documentElement.style;
+      if(t.bg_color)   r.setProperty('--bg-0', t.bg_color);
+      if(t.text_color) r.setProperty('--text', t.text_color);
+      if(t.hint_color) r.setProperty('--muted', t.hint_color);
+      if(t.button_color) r.setProperty('--accent', t.button_color);
+    }
 
-    // радио-пилюли
-    $$('#f-gender .pills input').forEach(i=>{
-      i.addEventListener('change', ()=>{
-        $$('#f-gender .pill').forEach(l=>l.classList.remove('active'));
-        i.parentElement.classList.add('active');
-      });
-    });
+    if(tg){
+      tg.ready(); tg.expand();
+      tg.onEvent('themeChanged', applyTelegramTheme);
+      applyTelegramTheme();
+    }
 
-    // простая маска даты ДД.ММ.ГГГГ
+    // Маска даты ДД.ММ.ГГГГ
     const bd = $('#birthDate');
     bd.addEventListener('input', ()=>{
       let v = bd.value.replace(/\D/g,'').slice(0,8);
@@ -167,39 +222,39 @@
       $('#f-birth').classList.remove('error');
     });
 
-    // валидация по минимуму
-    function validate(){
+    // Валидация
+    function validate(form){
       let ok = true;
-      if(!$('#firstName').value.trim()){ $('#f-firstname').classList.add('error'); ok=false } else $('#f-firstname').classList.remove('error');
+      if(!form.firstName.value.trim()){ $('#f-firstname').classList.add('error'); ok=false } else $('#f-firstname').classList.remove('error');
       const reD=/^([0-2]\d|3[01])\.(0\d|1[0-2])\.(19|20)\d{2}$/;
-      if(!reD.test($('#birthDate').value.trim())){ $('#f-birth').classList.add('error'); ok=false } else $('#f-birth').classList.remove('error');
+      if(!reD.test(form.birthDate.value.trim())){ $('#f-birth').classList.add('error'); ok=false } else $('#f-birth').classList.remove('error');
       const reE=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-      if(!reE.test($('#email').value.trim())){ $('#f-email').classList.add('error'); ok=false } else $('#f-email').classList.remove('error');
+      if(!reE.test(form.email.value.trim())){ $('#f-email').classList.add('error'); ok=false } else $('#f-email').classList.remove('error');
       if(!document.querySelector('input[name="gender"]:checked')){ $('#f-gender').classList.add('error'); ok=false } else $('#f-gender').classList.remove('error');
       return ok;
     }
 
     $('#profileForm').addEventListener('submit', (e)=>{
       e.preventDefault();
-      if(!validate()) return;
+      const form = e.currentTarget;
+      if(!validate(form)) return;
 
       const data = {
-        firstName: $('#firstName').value.trim(),
-        lastName: $('#lastName').value.trim(),
-        middleName: $('#middleName').value.trim(),
-        birthDate: $('#birthDate').value.trim(),
-        email: $('#email').value.trim(),
+        firstName: form.firstName.value.trim(),
+        lastName: form.lastName.value.trim(),
+        middleName: form.middleName.value.trim(),
+        birthDate: form.birthDate.value.trim(),
+        email: form.email.value.trim(),
         gender: (document.querySelector('input[name="gender"]:checked')||{}).value || '',
-        source: $('#source').value
+        source: form.source.value
       };
       if(tg) tg.sendData(JSON.stringify({type:'profile', payload:data}));
-      // здесь можешь показать свой toast/alert по желанию
     });
 
     $('#clearBtn').addEventListener('click', ()=>{
-      $('#profileForm').reset();
-      $$('#profileForm .field').forEach(f=>f.classList.remove('error'));
-      $$('#f-gender .pill').forEach(l=>l.classList.remove('active'));
+      const f = $('#profileForm');
+      f.reset();
+      $$('#profileForm .field').forEach(el=>el.classList.remove('error'));
     });
   </script>
 </body>
