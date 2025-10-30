@@ -13,7 +13,7 @@
     :root{
       --bg-0:#0A0F1E; --bg-1:#0F172A; --text:#E5F0FF; --muted:#91A4C7;
       --accent:#22D3EE; --radius:16px; --tab-h:64px;
-      --shadow-neon:0 8px 30px rgba(2,12,27,.55);
+      --shadow:0 8px 30px rgba(2,12,27,.55);
     }
     *,*::before,*::after{box-sizing:border-box}
     html,body{height:100%}
@@ -28,7 +28,7 @@
       background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));
       border:1px solid rgba(255,255,255,.06);
       border-radius:calc(var(--radius) + 6px);
-      padding:14px 16px; margin-bottom:10px; box-shadow:var(--shadow-neon);
+      padding:14px 16px; margin-bottom:10px; box-shadow:var(--shadow);
       display:flex; justify-content:space-between; align-items:center;
     }
     .muted{color:var(--muted);font-size:12px}
@@ -60,6 +60,10 @@
     <a class="tab" href="map.html">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M9 6l-5 2v10l5-2 6 2 5-2V6l-5 2-6-2z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
       <span>Карта</span>
+    </a>
+    <a class="tab" href="assortment.html">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M7 7h4v4H7zM13 7h4v4h-4zM7 13h4v4H7zM13 13h4v4h-4z" stroke="currentColor" stroke-width="1.6"/></svg>
+      <span>Ассортимент</span>
     </a>
     <a class="tab active" href="history.html" aria-selected="true">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M6 4h12v16H6zM9 8h6M9 12h6M9 16h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>

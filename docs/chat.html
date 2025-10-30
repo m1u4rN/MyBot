@@ -24,21 +24,12 @@
       padding-bottom: calc(var(--tab-h) + env(safe-area-inset-bottom, 0px) + 8px);
     }
     .page{max-width:720px;margin:0 auto;padding:16px; display:flex; flex-direction:column; gap:12px}
-    .chat{
-      flex:1; min-height:48vh;
-      background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));
-      border:1px solid rgba(255,255,255,.06);
-      border-radius:calc(var(--radius) + 6px);
-      padding:12px;
-      overflow:auto;
-    }
+    .chat{flex:1; min-height:48vh; background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.06); border-radius:calc(var(--radius) + 6px); padding:12px; overflow:auto}
     .msg{max-width:80%; padding:10px 12px; border-radius:14px; margin:6px 0}
     .me{margin-left:auto; background:rgba(34,211,238,.16); box-shadow:var(--shadow-neon)}
     .bot{background:var(--bg-1); border:1px solid rgba(255,255,255,.06)}
     .composer{display:flex; gap:8px}
-    .composer input{
-      flex:1; padding:12px 14px; border-radius:14px; border:1px solid rgba(255,255,255,.07); background:var(--bg-1); color:var(--text); outline:none;
-    }
+    .composer input{flex:1; padding:12px 14px; border-radius:14px; border:1px solid rgba(255,255,255,.07); background:var(--bg-1); color:var(--text); outline:none}
     .composer button{padding:12px 16px; border-radius:14px; border:0; background:linear-gradient(180deg,rgba(34,211,238,.18),rgba(167,139,250,.16)); color:var(--text); font-weight:600; box-shadow:var(--shadow-neon); cursor:pointer}
     /* tabbar */
     .tabbar{position:fixed;left:0;right:0;bottom:0;background:rgba(8,12,22,.8);border-top:1px solid rgba(255,255,255,.06);backdrop-filter:blur(10px);display:flex;justify-content:space-around;align-items:center;height:var(--tab-h);padding:8px 8px calc(8px + env(safe-area-inset-bottom, 0px));z-index:50}
@@ -64,6 +55,10 @@
     <a class="tab" href="map.html">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M9 6l-5 2v10l5-2 6 2 5-2V6l-5 2-6-2z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
       <span>Карта</span>
+    </a>
+    <a class="tab" href="assortment.html">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M7 7h4v4H7zM13 7h4v4h-4zM7 13h4v4H7zM13 13h4v4h-4z" stroke="currentColor" stroke-width="1.6"/></svg>
+      <span>Ассортимент</span>
     </a>
     <a class="tab" href="history.html">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M6 4h12v16H6zM9 8h6M9 12h6M9 16h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
@@ -95,7 +90,6 @@
     }
     if(tg){ tg.ready(); tg.expand(); tg.onEvent('themeChanged', applyTelegramTheme); applyTelegramTheme(); }
 
-    // простая имитация отправки
     const box = document.getElementById('chatBox');
     document.getElementById('sendBtn').onclick = ()=>{
       const inp = document.getElementById('msg');

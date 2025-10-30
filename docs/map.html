@@ -12,10 +12,9 @@
   <style>
     :root{
       --bg-0:#0A0F1E; --bg-1:#0F172A; --text:#E5F0FF; --muted:#91A4C7;
-      --accent:#22D3EE; --error:#F87171; --radius:16px;
+      --accent:#22D3EE; --radius:16px; --tab-h:64px;
       --shadow-neon:0 0 0 1px rgba(34,211,238,.35),0 0 24px rgba(34,211,238,.2);
-      --shadow-neon-strong:0 0 0 1px rgba(34,211,238,.65),0 0 32px rgba(34,211,238,.45);
-      --tab-h:64px;
+      --shadow:0 8px 30px rgba(2,12,27,.55);
     }
     *,*::before,*::after{box-sizing:border-box}
     html,body{height:100%}
@@ -30,36 +29,21 @@
       background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));
       border:1px solid rgba(255,255,255,.06);
       border-radius:calc(var(--radius) + 6px);
-      box-shadow:0 8px 30px rgba(2,12,27,.55);
+      box-shadow:var(--shadow);
       backdrop-filter:blur(6px);
     }
-    /* ===== Bottom Tabbar */
-    .tabbar{
-      position:fixed; left:0; right:0; bottom:0;
-      background:rgba(8,12,22,.8);
-      border-top:1px solid rgba(255,255,255,.06);
-      backdrop-filter:blur(10px);
-      display:flex; justify-content:space-around; align-items:center;
-      height:var(--tab-h);
-      padding:8px 8px calc(8px + env(safe-area-inset-bottom, 0px));
-      z-index:50;
-    }
-    .tab{
-      flex:1; display:flex; flex-direction:column; align-items:center; gap:6px;
-      text-decoration:none; color:var(--muted); font-size:12px; font-weight:600;
-      padding:8px 0; border-radius:10px; transition:color .15s, background .15s;
-    }
-    .tab svg{opacity:.7; transition:opacity .15s, transform .1s}
-    .tab:active svg{transform:translateY(1px)}
-    .tab.active{color:var(--accent)}
-    .tab.active svg{opacity:1}
-    /* карта-заглушка */
     .map{height:60vh; min-height:360px}
     .map .placeholder{
       height:100%; border-radius:inherit; display:flex; align-items:center; justify-content:center;
       color:var(--muted); background:var(--bg-1);
       border:1px dashed rgba(255,255,255,.1);
     }
+    /* ===== Bottom Tabbar */
+    .tabbar{position:fixed;left:0;right:0;bottom:0;background:rgba(8,12,22,.8);border-top:1px solid rgba(255,255,255,.06);backdrop-filter:blur(10px);display:flex;justify-content:space-around;align-items:center;height:var(--tab-h);padding:8px 8px calc(8px + env(safe-area-inset-bottom, 0px));z-index:50}
+    .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;color:var(--muted);font-size:12px;font-weight:600;padding:8px 0;border-radius:10px;transition:color .15s, background .15s}
+    .tab svg{opacity:.7;transition:opacity .15s, transform .1s}
+    .tab:active svg{transform:translateY(1px)}
+    .tab.active{color:var(--accent)} .tab.active svg{opacity:1}
   </style>
 </head>
 <body>
@@ -69,14 +53,14 @@
     </section>
   </main>
 
-  <!-- bottom tabs -->
   <nav class="tabbar" role="tablist" aria-label="Навигация">
     <a class="tab active" href="map.html" aria-selected="true">
-      <!-- map icon -->
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M9 6l-5 2v10l5-2 6 2 5-2V6l-5 2-6-2z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
-      </svg>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M9 6l-5 2v10l5-2 6 2 5-2V6l-5 2-6-2z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
       <span>Карта</span>
+    </a>
+    <a class="tab" href="assortment.html">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M7 7h4v4H7zM13 7h4v4h-4zM7 13h4v4H7zM13 13h4v4h-4z" stroke="currentColor" stroke-width="1.6"/></svg>
+      <span>Ассортимент</span>
     </a>
     <a class="tab" href="history.html">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M6 4h12v16H6zM9 8h6M9 12h6M9 16h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>

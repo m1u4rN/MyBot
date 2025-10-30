@@ -15,6 +15,7 @@
       --accent:#22D3EE; --error:#F87171; --radius:16px; --tab-h:64px;
       --shadow-neon:0 0 0 1px rgba(34,211,238,.35),0 0 24px rgba(34,211,238,.2);
       --shadow-neon-strong:0 0 0 1px rgba(34,211,238,.65),0 0 32px rgba(34,211,238,.45);
+      --shadow:0 8px 30px rgba(2,12,27,.55);
     }
     *,*::before,*::after{box-sizing:border-box}
     html,body{height:100%}
@@ -25,17 +26,8 @@
       padding-bottom: calc(var(--tab-h) + env(safe-area-inset-bottom, 0px) + 8px);
     }
     .page{max-width:720px;margin:0 auto;padding:16px}
-    .card{
-      width:100%;
-      background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));
-      border:1px solid rgba(255,255,255,.06);
-      border-radius:calc(var(--radius) + 6px);
-      padding:20px 20px 16px;
-      box-shadow:0 8px 30px rgba(2,12,27,.55);
-      backdrop-filter:blur(6px);
-    }
+    .card{width:100%;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.06);border-radius:calc(var(--radius) + 6px);padding:20px 20px 16px;box-shadow:var(--shadow);backdrop-filter:blur(6px)}
     .grid{display:grid;gap:12px}
-    /* Поля и плавающие лейблы (только .flabel) */
     .field{position:relative}
     .control{width:100%;background:var(--bg-1);border-radius:var(--radius);border:1px solid rgba(255,255,255,.07);padding:18px 14px 14px;outline:none;transition:box-shadow .18s,border-color .18s,background .18s}
     .control::placeholder{color:transparent}
@@ -110,12 +102,9 @@
         <div class="field" id="f-gender">
           <div class="top-label" id="genderLabel">Пол</div>
           <div class="pills" role="radiogroup" aria-labelledby="genderLabel">
-            <input class="radio" type="radio" id="g_m" name="gender" value="male">
-            <label class="pill" for="g_m">Мужской</label>
-            <input class="radio" type="radio" id="g_f" name="gender" value="female">
-            <label class="pill" for="g_f">Женский</label>
-            <input class="radio" type="radio" id="g_o" name="gender" value="other">
-            <label class="pill" for="g_o">Другое</label>
+            <input class="radio" type="radio" id="g_m" name="gender" value="male"><label class="pill" for="g_m">Мужской</label>
+            <input class="radio" type="radio" id="g_f" name="gender" value="female"><label class="pill" for="g_f">Женский</label>
+            <input class="radio" type="radio" id="g_o" name="gender" value="other"><label class="pill" for="g_o">Другое</label>
           </div>
           <div class="error-msg">Выберите вариант.</div>
         </div>
@@ -151,6 +140,10 @@
     <a class="tab" href="map.html">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M9 6l-5 2v10l5-2 6 2 5-2V6l-5 2-6-2z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
       <span>Карта</span>
+    </a>
+    <a class="tab" href="assortment.html">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M7 7h4v4H7zM13 7h4v4h-4zM7 13h4v4H7zM13 13h4v4h-4z" stroke="currentColor" stroke-width="1.6"/></svg>
+      <span>Ассортимент</span>
     </a>
     <a class="tab" href="history.html">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M6 4h12v16H6zM9 8h6M9 12h6M9 16h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
