@@ -42,7 +42,7 @@
     }
     .grid{display:grid;gap:12px}
 
-    /* ===== Поля и плавающие лейблы без «плашки» */
+    /* ===== Поля и плавающие лейблы (только для .flabel) */
     .field{position:relative}
     .control{
       width:100%; background:var(--bg-1);
@@ -53,7 +53,7 @@
       transition:box-shadow .18s,border-color .18s,background .18s;
     }
     .control::placeholder{color:transparent}
-    .field label{
+    .field .flabel{
       position:absolute; left:14px; top:16px;
       font-size:14px; color:var(--muted);
       pointer-events:none; background:none; z-index:1;
@@ -61,8 +61,8 @@
     }
     .control:focus,.control:not(:placeholder-shown){background:rgba(14,23,42,.85)}
     .control:focus{box-shadow:var(--shadow-neon);border-color:rgba(34,211,238,.45)}
-    .control:focus ~ label,
-    .control:not(:placeholder-shown) ~ label{top:4px;font-size:12px;color:var(--accent)}
+    .control:focus ~ .flabel,
+    .control:not(:placeholder-shown) ~ .flabel{top:4px;font-size:12px;color:var(--accent)}
     .error-msg{margin-top:6px;font-size:12px;color:var(--error);display:none}
     .field.error .error-msg{display:block}
     .field.error .control{border-color:rgba(248,113,113,.6)!important;box-shadow:0 0 0 1px rgba(248,113,113,.55),0 0 22px rgba(248,113,113,.25)!important}
@@ -122,29 +122,29 @@
 
         <div class="field" id="f-firstname">
           <input class="control" type="text" id="firstName" name="firstName" placeholder=" " autocomplete="given-name" required />
-          <label for="firstName">Имя</label>
+          <label class="flabel" for="firstName">Имя</label>
           <div class="error-msg">Укажите имя.</div>
         </div>
 
         <div class="field">
           <input class="control" type="text" id="lastName" name="lastName" placeholder=" " autocomplete="family-name" />
-          <label for="lastName">Фамилия</label>
+          <label class="flabel" for="lastName">Фамилия</label>
         </div>
 
         <div class="field">
           <input class="control" type="text" id="middleName" name="middleName" placeholder=" " />
-          <label for="middleName">Отчество</label>
+          <label class="flabel" for="middleName">Отчество</label>
         </div>
 
         <div class="field" id="f-birth">
           <input class="control" type="text" id="birthDate" name="birthDate" inputmode="numeric" placeholder=" " maxlength="10" required />
-          <label for="birthDate">Дата рождения</label>
+          <label class="flabel" for="birthDate">Дата рождения</label>
           <div class="error-msg">Формат: ДД.ММ.ГГГГ</div>
         </div>
 
         <div class="field" id="f-email">
           <input class="control" type="email" id="email" name="email" placeholder=" " autocomplete="email" required />
-          <label for="email">Email</label>
+          <label class="flabel" for="email">Email</label>
           <div class="error-msg">Введите корректный email.</div>
         </div>
 
@@ -196,16 +196,15 @@
     const $$ = (s,p=document)=>[...p.querySelectorAll(s)];
     const tg = window.Telegram?.WebApp;
 
-    // Телеграм тема → CSS переменные
+    // применяем тему Телеграма
     function applyTelegramTheme(){
       if(!tg || !tg.themeParams) return;
       const t = tg.themeParams, r = document.documentElement.style;
-      if(t.bg_color)   r.setProperty('--bg-0', t.bg_color);
-      if(t.text_color) r.setProperty('--text', t.text_color);
-      if(t.hint_color) r.setProperty('--muted', t.hint_color);
+      if(t.bg_color)     r.setProperty('--bg-0', t.bg_color);
+      if(t.text_color)   r.setProperty('--text', t.text_color);
+      if(t.hint_color)   r.setProperty('--muted', t.hint_color);
       if(t.button_color) r.setProperty('--accent', t.button_color);
     }
-
     if(tg){
       tg.ready(); tg.expand();
       tg.onEvent('themeChanged', applyTelegramTheme);
