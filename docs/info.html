@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>Vape Bot — Инфо</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root{
+      --bg-0:#0A0F1E; --bg-1:#0F172A; --text:#E5F0FF; --muted:#91A4C7;
+      --accent:#22D3EE; --radius:16px; --tab-h:64px;
+      --shadow:0 8px 30px rgba(2,12,27,.55);
+    }
+    *,*::before,*::after{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; background:var(--bg-0); color:var(--text);
+      font-family:Inter,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif;
+      -webkit-font-smoothing:antialiased;
+      padding-bottom: calc(var(--tab-h) + env(safe-area-inset-bottom, 0px) + 8px);
+    }
+    .page{max-width:720px;margin:0 auto;padding:16px;display:grid;gap:12px}
+    .card{
+      background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:calc(var(--radius) + 6px);
+      padding:16px; box-shadow:var(--shadow);
+    }
+    .muted{color:var(--muted)}
+    .row{display:flex;justify-content:space-between;gap:12px}
+    /* tabbar */
+    .tabbar{position:fixed;left:0;right:0;bottom:0;background:rgba(8,12,22,.8);border-top:1px solid rgba(255,255,255,.06);backdrop-filter:blur(10px);display:flex;justify-content:space-around;align-items:center;height:var(--tab-h);padding:8px 8px calc(8px + env(safe-area-inset-bottom, 0px));z-index:50}
+    .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;color:var(--muted);font-size:12px;font-weight:600;padding:8px 0;border-radius:10px;transition:color .15s, background .15s}
+    .tab svg{opacity:.7;transition:opacity .15s, transform .1s}
+    .tab:active svg{transform:translateY(1px)}
+    .tab.active{color:var(--accent)} .tab.active svg{opacity:1}
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="card">
+      <h3 style="margin:0 0 8px 0">О магазине</h3>
+      <p class="muted">Сеть магазинов VAPE ZONE. Работаем 10:00–22:00 ежедневно. 18+.</p>
+    </section>
+
+    <section class="card">
+      <h3 style="margin:0 0 8px 0">Контакты</h3>
+      <div class="row"><span class="muted">Телефон</span><span>+7 (900) 000-00-00</span></div>
+      <div class="row"><span class="muted">Telegram</span><span>@Vapes_Catalog_Bot</span></div>
+      <div class="row"><span class="muted">Email</span><span>support@example.com</span></div>
+    </section>
+
+    <section class="card">
+      <h3 style="margin:0 0 8px 0">Правила</h3>
+      <ul class="muted" style="margin:0 0 0 18px">
+        <li>Продажа только совершеннолетним.</li>
+        <li>Бонусы начисляются при предъявлении QR в профиле.</li>
+        <li>Возврат согласно политике магазина.</li>
+      </ul>
+    </section>
+  </main>
+
+  <nav class="tabbar" role="tablist" aria-label="Навигация">
+    <a class="tab" href="map.html">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M9 6l-5 2v10l5-2 6 2 5-2V6l-5 2-6-2z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      <span>Карта</span>
+    </a>
+    <a class="tab" href="history.html">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M6 4h12v16H6zM9 8h6M9 12h6M9 16h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <span>История</span>
+    </a>
+    <a class="tab" href="chat.html">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M20 12a7 7 0 0 1-7 7H6l-2 3V12a7 7 0 1 1 16 0z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      <span>Чат</span>
+    </a>
+    <a class="tab active" href="info.html" aria-selected="true">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 8h.01M11 11h2v5h-2z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <span>Инфо</span>
+    </a>
+    <a class="tab" href="profile.html">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm7 8a7 7 0 0 0-14 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <span>Профиль</span>
+    </a>
+  </nav>
+
+  <script>
+    const tg = window.Telegram?.WebApp;
+    function applyTelegramTheme(){
+      if(!tg || !tg.themeParams) return;
+      const t = tg.themeParams, r = document.documentElement.style;
+      if(t.bg_color)     r.setProperty('--bg-0', t.bg_color);
+      if(t.text_color)   r.setProperty('--text', t.text_color);
+      if(t.hint_color)   r.setProperty('--muted', t.hint_color);
+      if(t.button_color) r.setProperty('--accent', t.button_color);
+    }
+    if(tg){ tg.ready(); tg.expand(); tg.onEvent('themeChanged', applyTelegramTheme); applyTelegramTheme(); }
+  </script>
+</body>
+</html>
