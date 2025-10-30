@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>Vape Bot — Ассортимент</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root{
+      --bg-0:#0A0F1E; --bg-1:#0F172A; --text:#E5F0FF; --muted:#91A4C7;
+      --accent:#22D3EE; --radius:16px; --tab-h:64px;
+      --shadow-neon:0 0 0 1px rgba(34,211,238,.35),0 0 24px rgba(34,211,238,.2);
+      --shadow:0 8px 30px rgba(2,12,27,.55);
+    }
+    *,*::before,*::after{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; background:var(--bg-0); color:var(--text);
+      font-family:Inter,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif;
+      -webkit-font-smoothing:antialiased;
+      padding-bottom: calc(var(--tab-h) + env(safe-area-inset-bottom, 0px) + 8px);
+    }
+    .page{max-width:960px;margin:0 auto;padding:16px;display:grid;gap:12px}
+    .toolbar{display:flex;gap:8px;flex-wrap:wrap}
+    .search{flex:1;min-width:220px}
+    .search input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.07);background:var(--bg-1);color:var(--text);outline:none}
+    .chips{display:flex;flex-wrap:wrap;gap:8px}
+    .chip{padding:8px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);cursor:pointer}
+    .chip.active{border-color:rgba(34,211,238,.6);box-shadow:var(--shadow-neon);background:rgba(34,211,238,.16)}
+    .grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+    .card{
+      background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:calc(var(--radius) + 6px);
+      padding:10px; box-shadow:var(--shadow);
+      display:flex;flex-direction:column;gap:8px
+    }
+    .pic{height:120px;border-radius:12px;background:linear-gradient(135deg, rgba(34,211,238,.25), rgba(167,139,250,.22));display:flex;align-items:center;justify-content:center;color:rgba(0,0,0,.45);font-weight:700}
+    .row{display:flex;justify-content:space-between;gap:8px}
+    .title{font-weight:600}
+    .muted{color:var(--muted);font-size:12px}
+    .price{font-weight:700}
+    .btn{padding:10px 12px;border-radius:12px;border:0;cursor:pointer;font-weight:600;color:var(--text);background:linear-gradient(180deg,rgba(34,211,238,.18),rgba(167,139,250,.16));box-shadow:var(--shadow-neon)}
+    /* tabbar */
+    .tabbar{position:fixed;left:0;right:0;bottom:0;background:rgba(8,12,22,.8);border-top:1px solid rgba(255,255,255,.06);backdrop-filter:blur(10px);display:flex;justify-content:space-around;align-items:center;height:var(--tab-h);padding:8px 8px calc(8px + env(safe-area-inset-bottom, 0px));z-index:50}
+    .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;color:var(--muted);font-size:12px;font-weight:600;padding:8px 0;border-radius:10px;transition:color .15s, background .15s}
+    .tab svg{opacity:.7;transition:opacity .15s, transform .1s}
+    .tab:active svg{transform:translateY(1px)}
+    .tab.active{color:var(--accent)} .tab.active svg{opacity:1}
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="toolbar">
+      <div class="search"><input id="search" type="text" placeholder="Поиск по ассортименту…" /></div>
+      <div class="chips" id="chips">
+        <button class="chip active" data-filter="all">Все</button>
+        <button class="chip" data-filter="disposable">Одноразки</button>
+        <button class="chip" data-filter="liquid">Жидкости</button>
+        <button class="chip" data-filter="pod">Pod-системы</button>
+        <button class="chip" data-filter="tobacco">Табаки</button>
+        <button class="chip" data-filter="acc">Аксессуары</button>
+      </div>
+    </div>
+
+    <section class="grid" id="grid">
+      <!-- демо-карточки -->
+      <article class="card" data-cat="disposable">
+        <div class="pic">1200</div>
+        <div class="title">Одноразка Ice Berry</div>
+        <div class="row"><span class="muted">2% • 1200 затяжек</span><span class="price">790 ₽</span></div>
+        <button class="btn">В корзину</button>
+      </article>
+
+      <article class="card" data-cat="liquid">
+        <div class="pic">60 мл</div>
+        <div class="title">Жидкость Mango Wave</div>
+        <div class="row"><span class="muted">3 мг • 60 мл</span><span class="price">590 ₽</span></div>
+        <button class="btn">В корзину</button>
+      </article>
+
+      <article class="card" data-cat="pod">
+        <div class="pic">POD</div>
+        <div class="title">Pod-система AirMini</div>
+        <div class="row"><span class="muted">900 mAh • USB-C</span><span class="price">2 990 ₽</span></div>
+        <button class="btn">В корзину</button>
+      </article>
+
+      <article class="card" data-cat="tobacco">
+        <div class="pic">50 г</div>
+        <div class="title">Табак Dark Grape</div>
+        <div class="row"><span class="muted">Крепость средняя</span><span class="price">750 ₽</span></div>
+        <button class="btn">В корзину</button>
+      </article>
+
+      <article class="card" data-cat="acc">
+        <div class="pic">Coil</div>
+        <div class="title">Испаритель Mesh 0.8Ω</div>
+        <div class="row"><span class="muted">Совм.: AirMini</span><span class="price">350 ₽</span></div>
+        <button class="btn">В корзину</button>
+      </article>
+
+      <article class="card" data-cat="liquid">
+        <div class="pic">30 мл</div>
+        <div class="title">Salt Pineapple</div>
+        <div class="row"><span class="muted">20 мг • 30 мл</span><span class="price">520 ₽</span></div>
+        <button class="btn">В корзину</button>
+      </article>
+    </section>
+  </main>
+
+  <nav class="tabbar" role="tablist" aria-label="Навигация">
+    <a class="tab" href="map.html">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M9 6l-5 2v10l5-2 6 2 5-2V6l-5 2-6-2z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      <span>Карта</span>
+    </a>
+    <a class="tab active" href="assortment.html" aria-selected="true">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M7 7h4v4H7zM13 7h4v4h-4zM7 13h4v4H7zM13 13h4v4h-4z" stroke="currentColor" stroke-width="1.6"/></svg>
+      <span>Ассортимент</span>
+    </a>
+    <a class="tab" href="history.html">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M6 4h12v16H6zM9 8h6M9 12h6M9 16h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <span>История</span>
+    </a>
+    <a class="tab" href="chat.html">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M20 12a7 7 0 0 1-7 7H6l-2 3V12a7 7 0 1 1 16 0z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      <span>Чат</span>
+    </a>
+    <a class="tab" href="info.html">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 8h.01M11 11h2v5h-2z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <span>Инфо</span>
+    </a>
+    <a class="tab" href="profile.html">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm7 8a7 7 0 0 0-14 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <span>Профиль</span>
+    </a>
+  </nav>
+
+  <script>
+    const tg = window.Telegram?.WebApp;
+    function applyTelegramTheme(){
+      if(!tg || !tg.themeParams) return;
+      const t = tg.themeParams, r = document.documentElement.style;
+      if(t.bg_color)     r.setProperty('--bg-0', t.bg_color);
+      if(t.text_color)   r.setProperty('--text', t.text_color);
+      if(t.hint_color)   r.setProperty('--muted', t.hint_color);
+      if(t.button_color) r.setProperty('--accent', t.button_color);
+    }
+    if(tg){ tg.ready(); tg.expand(); tg.onEvent('themeChanged', applyTelegramTheme); applyTelegramTheme(); }
+
+    // простая фильтрация и поиск
+    const chips = document.getElementById('chips');
+    const grid  = document.getElementById('grid');
+    const search= document.getElementById('search');
+
+    function applyFilter(){
+      const active = chips.querySelector('.chip.active')?.dataset.filter || 'all';
+      const q = search.value.trim().toLowerCase();
+      [...grid.children].forEach(card=>{
+        const matchCat = (active==='all') || (card.dataset.cat===active);
+        const matchText = card.innerText.toLowerCase().includes(q);
+        card.style.display = (matchCat && matchText) ? '' : 'none';
+      });
+    }
+
+    chips.addEventListener('click', (e)=>{
+      if(!(e.target instanceof HTMLElement)) return;
+      const b = e.target.closest('.chip'); if(!b) return;
+      chips.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+      b.classList.add('active'); applyFilter();
+    });
+    search.addEventListener('input', applyFilter);
+  </script>
+</body>
+</html>
