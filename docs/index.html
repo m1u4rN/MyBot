@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark light" />
+  <title>Профиль</title>
+  <style>
+    :root{
+      --bg:#0f1216; --text:#e7e9ec; --muted:#9aa3ad;
+      --card:#151a21; --stroke:rgba(255,255,255,.08);
+      --accent:#50a8eb; --accent-text:#ffffff;
+      --danger:#ff6b6b; --success:#36c793;
+      --radius:16px; --gap:14px;
+      --shadow:0 10px 30px rgba(0,0,0,.25);
+      font-synthesis-weight:none;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:
+        radial-gradient(1200px 600px at 20% -10%, rgba(255,255,255,.04), transparent 45%),
+        radial-gradient(800px 400px at 120% 10%, rgba(80,168,235,.08), transparent 50%),
+        var(--bg);
+      color:var(--text);
+      font:16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+    }
+    .app{max-width:720px;margin:0 auto;padding:20px}
+    .app-header h1{margin:6px 0 14px;font-size:22px;font-weight:700}
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.015)) , var(--card);
+      border:1px solid var(--stroke); border-radius:var(--radius);
+      box-shadow:var(--shadow); padding:18px;
+    }
+
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap)}
+    .field-full{grid-column:1 / -1}
+
+    .field{display:flex;flex-direction:column;gap:6px}
+    .label{font-size:13px;color:var(--muted)}
+    .hint{font-size:12px;color:var(--muted)}
+
+    input, select{
+      width:100%; padding:12px 14px; border-radius:12px;
+      border:1px solid var(--stroke); background:#0c1015; color:var(--text);
+      outline:none; transition:border-color .15s, box-shadow .15s, background .15s;
+    }
+    input::placeholder{color:rgba(255,255,255,.35)}
+    input:focus, select:focus{
+      border-color:color-mix(in oklab, var(--accent), white 10%);
+      box-shadow:0 0 0 3px color-mix(in oklab, var(--accent) 60%, transparent);
+    }
+    input:user-invalid, select:user-invalid{border-color:var(--danger)}
+    input:user-valid{border-color:color-mix(in oklab, var(--success) 70%, transparent)}
+
+    .segmented{
+      display:grid; grid-template-columns:repeat(3,1fr);
+      gap:8px; border:none; margin:16px 0;
+    }
+    .segmented legend{font-size:13px;color:var(--muted);margin-bottom:6px}
+    .segmented input{display:none}
+    .segmented label{
+      text-align:center; padding:10px 12px; border-radius:999px; cursor:pointer;
+      background:#0c1015; border:1px solid var(--stroke); user-select:none;
+    }
+    .segmented input:checked + label{
+      background:var(--accent); color:var(--accent-text);
+      border-color:color-mix(in oklab, var(--accent), white 10%);
+    }
+
+    select{
+      appearance:none; background-image:
+       url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat:no-repeat; background-position:right 10px center; padding-right:36px;
+      opacity:.95;
+    }
+
+    .ghost-submit{display:none} /* в Telegram скрыта — используем MainButton */
+
+    @media (max-width:640px){ .grid{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="app-header"><h1>Профиль</h1></header>
+
+    <main class="card">
+      <form id="profileForm" novalidate>
+        <div class="grid">
+          <label class="field">
+            <span class="label">Имя *</span>
+            <input required name="first_name" placeholder="Макс" autocomplete="given-name">
+            <small class="hint">Как в документе</small>
+          </label>
+
+          <label class="field">
+            <span class="label">Фамилия</span>
+            <input name="last_name" autocomplete="family-name">
+          </label>
+
+          <label class="field">
+            <span class="label">Отчество</span>
+            <input name="middle_name">
+          </label>
+
+          <label class="field">
+            <span class="label">Дата рождения *</span>
+            <!-- обратите внимание: одинарные слэши в pattern для HTML -->
+            <input required name="birthdate" inputmode="numeric"
+                   placeholder="дд.мм.гггг" pattern="\d{2}\.\d{2}\.\d{4}">
+          </label>
+
+          <label class="field field-full">
+            <span class="label">Email *</span>
+            <input required type="email" name="email" placeholder="name@example.com" autocomplete="email">
+          </label>
+        </div>
+
+        <fieldset class="segmented">
+          <legend>Пол *</legend>
+          <input type="radio" id="g_m" name="gender" value="m" required>
+          <label for="g_m">Мужской</label>
+          <input type="radio" id="g_f" name="gender" value="f">
+          <label for="g_f">Женский</label>
+          <input type="radio" id="g_o" name="gender" value="o">
+          <label for="g_o">Другое</label>
+        </fieldset>
+
+        <label class="field field-full">
+          <span class="label">Откуда вы узнали о нас?</span>
+          <select name="source">
+            <option value="" selected disabled>Выберите вариант</option>
+            <option>Друзья</option><option>Реклама</option><option>Поиск</option><option>Другое</option>
+          </select>
+        </label>
+
+        <button type="submit" class="ghost-submit">Сохранить</button>
+      </form>
+    </main>
+  </div>
+
+  <script>
+    // Доступ к Telegram Mini App (в браузере может быть null)
+    const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
+
+    function hexToRgba(hex, a = 1){
+      if(!hex) return null;
+      let c = hex.replace('#','');
+      if(c.length===3) c = c.split('').map(x=>x+x).join('');
+      const n = parseInt(c,16);
+      const r=(n>>16)&255, g=(n>>8)&255, b=n&255;
+      return `rgba(${r},${g},${b},${a})`;
+    }
+
+    // Подхватываем тему Telegram
+    function applyTheme(){
+      const p = (tg && tg.themeParams) || {};
+      const map = {
+        '--bg': p.bg_color,
+        '--text': p.text_color,
+        '--muted': p.hint_color,
+        '--card': p.secondary_bg_color,
+        '--stroke': p.section_separator_color ? hexToRgba(p.section_separator_color, .35) : null,
+        '--accent': p.button_color,
+        '--accent-text': p.button_text_color
+      };
+      for (const [k,v] of Object.entries(map)){ if(v) document.documentElement.style.setProperty(k, v); }
+    }
+    applyTheme();
+    tg && tg.onEvent('themeChanged', applyTheme);
+
+    // Форма + MainButton
+    const form = document.getElementById('profileForm');
+
+    if (tg){
+      tg.expand();
+      tg.MainButton.setText('Сохранить');
+      tg.MainButton.show();
+      tg.MainButton.onClick(() => form.requestSubmit());
+    } else {
+      // В обычном браузере показываем запасную кнопку
+      document.querySelector('.ghost-submit').style.display='inline-flex';
+    }
+
+    form.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      if(!form.checkValidity()){
+        form.reportValidity();
+        tg && tg.HapticFeedback.notificationOccurred('error');
+        return;
+      }
+      const data = Object.fromEntries(new FormData(form).entries());
+
+      // Вариант А: передать данные боту (если открыто как Web App из чата)
+      if (tg && typeof tg.sendData === 'function') {
+        tg.sendData(JSON.stringify(data)); // бот получит web_app_data
+      }
+
+      // Вариант Б: отправить на ваш бекенд
+      // await fetch('/api/profile', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+
+      tg && tg.HapticFeedback.notificationOccurred('success');
+
+      if (tg) tg.close(); else alert('Готово! Посмотри данные в консоли.');
+      console.log('Form data:', data);
+    });
+  </script>
+</body>
+</html>
