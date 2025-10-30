@@ -7,28 +7,24 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
-    /* =====================  TOKENS  ===================== */
     :root{
-      --bg-0:#0A0F1E;       /* основной фон */
-      --bg-1:#0F172A;       /* карточки/поля */
-      --text:#E5F0FF;       /* основной текст */
-      --muted:#91A4C7;      /* вторичный текст/подписи */
-      --accent:#22D3EE;     /* бирюзовый неон */
-      --accent-2:#A78BFA;   /* фиолетовый неон */
-      --error:#F87171;      /* ошибки */
+      --bg-0:#0A0F1E;
+      --bg-1:#0F172A;
+      --text:#E5F0FF;
+      --muted:#91A4C7;
+      --accent:#22D3EE;
+      --accent-2:#A78BFA;
+      --error:#F87171;
       --radius:16px;
       --shadow-neon:0 0 0 1px rgba(34,211,238,.35), 0 0 24px rgba(34,211,238,.2);
       --shadow-neon-strong:0 0 0 1px rgba(34,211,238,.65), 0 0 32px rgba(34,211,238,.45);
     }
-
-    /* =====================  RESET  ===================== */
     *,*::before,*::after{box-sizing:border-box}
     html,body{height:100%}
-    body{margin:0;font-family:Inter,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg-0);color:var(--text);line-height:1.45; -webkit-font-smoothing:antialiased}
+    body{margin:0;font-family:Inter,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg-0);color:var(--text);line-height:1.45;-webkit-font-smoothing:antialiased}
     img{max-width:100%;display:block}
     button,input,select{font:inherit;color:inherit}
 
-    /* =====================  BACKDROP  ===================== */
     .backdrop{
       position:fixed; inset:0; overflow:hidden; pointer-events:none;
       background:
@@ -36,332 +32,38 @@
         radial-gradient(900px 600px at -10% 110%, rgba(34,211,238,.14), transparent 60%),
         radial-gradient(700px 400px at 50% 0%, rgba(34,211,238,.08), transparent 60%),
         linear-gradient(180deg, rgba(0,0,0,.0), rgba(0,0,0,.25));
-      filter: saturate(1.05);
+      filter:saturate(1.05);
     }
-
-    /* =====================  LAYOUT  ===================== */
-    .wrap{min-height:100%; display:flex; align-items:flex-start; justify-content:center; padding:24px}
-    .app{
-      width:min(680px, 100%);
-      margin:auto;
-      position:relative;
-    }
+    .wrap{min-height:100%;display:flex;align-items:flex-start;justify-content:center;padding:24px}
+    .app{width:min(680px,100%);margin:auto;position:relative}
     .card{
       position:relative;
       background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
       border-radius:calc(var(--radius) + 6px);
       padding:20px 20px 16px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 8px 30px rgba(2,12,27,.55);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.04), 0 8px 30px rgba(2,12,27,.55);
       border:1px solid rgba(255,255,255,.06);
-      backdrop-filter: blur(6px);
+      backdrop-filter:blur(6px);
     }
+    .title{font-weight:700;font-size:26px;letter-spacing:.2px;margin:6px 0 14px;text-shadow:0 0 22px rgba(167,139,250,.25)}
 
-    .title{
-      font-weight:700; font-size:26px; letter-spacing:.2px; margin:6px 0 14px;
-      text-shadow:0 0 22px rgba(167,139,250,.25);
-    }
+    /* GRID */
+    .grid{display:grid;gap:12px}
+    .field{position:relative; --label-rest-top:18px; --label-float-top:6px;}
+    .hint{margin-top:6px;font-size:12px;color:var(--muted)}
+    .error-msg{margin-top:6px;font-size:12px;color:var(--error);display:none}
+    .field.error .error-msg{display:block}
 
-    /* =====================  FIELDS (floating label) ===================== */
-    .grid{display:grid; gap:12px}
-    .field{position:relative}
+    /* INPUT + FLOATING LABEL (без «плашки») */
     .control{
-      width:100%; background:var(--bg-1);
+      width:100%;background:var(--bg-1);
       border-radius:var(--radius);
       border:1px solid rgba(255,255,255,.07);
       padding:18px 14px 14px;
-      outline:none; transition: box-shadow .18s ease, border-color .18s ease, background .18s ease;
+      outline:none;transition:box-shadow .18s ease,border-color .18s ease,background .18s ease;
     }
     .control::placeholder{color:transparent}
     .field label{
-      position:absolute; left:14px; top:16px; color:var(--muted);
-      font-size:14px; pointer-events:none; transition: all .16s ease;
-      background:transparent; padding:0 6px;
-    }
-    /* float up when focused or has text */
-    .control:focus, .control:not(:placeholder-shown){background:rgba(14,23,42,.85)}
-    .control:focus{box-shadow:var(--shadow-neon); border-color:rgba(34,211,238,.45)}
-    .control:not(:placeholder-shown) ~ label,
-    .control:focus ~ label{
-      top:-8px; font-size:12px; color:var(--accent); background:linear-gradient(180deg, rgba(10,15,30,1), rgba(10,15,30,0));
-      text-shadow:0 0 14px rgba(34,211,238,.25);
-    }
-
-    /* error state */
-    .field.error .control{border-color:rgba(248,113,113,.6) !important; box-shadow:0 0 0 1px rgba(248,113,113,.55), 0 0 22px rgba(248,113,113,.25) !important}
-    .hint{margin-top:6px; font-size:12px; color:var(--muted)}
-    .error-msg{margin-top:6px; font-size:12px; color:var(--error); display:none}
-    .field.error .error-msg{display:block}
-
-    /* =====================  RADIO PILLS  ===================== */
-    .pills{display:flex; gap:8px; flex-wrap:wrap}
-    .pill{
-      position:relative;
-      border-radius:999px;
-      background:rgba(255,255,255,.04);
-      border:1px solid rgba(255,255,255,.09);
-      padding:10px 14px; cursor:pointer; user-select:none;
-      transition: transform .08s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
-    }
-    .pill:hover{border-color:rgba(255,255,255,.18)}
-    .pill input{position:absolute; inset:0; opacity:0}
-    .pill.active{
-      background:linear-gradient(180deg, rgba(34,211,238,.18), rgba(167,139,250,.16));
-      border-color:rgba(34,211,238,.65);
-      box-shadow:var(--shadow-neon);
-    }
-
-    /* =====================  SELECT  ===================== */
-    .select{position:relative}
-    .select select{
-      appearance:none; -webkit-appearance:none; -moz-appearance:none;
-      background:var(--bg-1);
-      color:inherit;
-      border-radius:var(--radius);
-      border:1px solid rgba(255,255,255,.07);
-      padding:16px 42px 14px 14px; width:100%;
-      outline:none; transition: box-shadow .18s ease, border-color .18s ease, background .18s ease;
-    }
-    .select select:focus{box-shadow:var(--shadow-neon); border-color:rgba(34,211,238,.45); background:rgba(14,23,42,.85)}
-    .select .chev{
-      position:absolute; right:14px; top:50%; transform:translateY(-50%); pointer-events:none;
-      opacity:.75;
-    }
-
-    /* =====================  CTA / FOOTER  ===================== */
-    .actions{display:flex; gap:10px; justify-content:flex-end; padding-top:8px}
-    .btn{
-      padding:12px 16px; border-radius:14px; border:1px solid transparent; cursor:pointer; font-weight:600;
-      background:linear-gradient(180deg, rgba(34,211,238,.18), rgba(167,139,250,.16));
-      color:var(--text);
-      box-shadow:var(--shadow-neon);
-      transition: box-shadow .18s ease, transform .06s ease, border-color .18s ease, background .18s;
-    }
-    .btn:hover{box-shadow:var(--shadow-neon-strong)}
-    .btn:active{transform:translateY(1px)}
-    .ghost{background:transparent; border-color:rgba(255,255,255,.12)}
-    .meta{opacity:.7; font-size:12px; text-align:center; margin:12px 0 6px}
-
-    /* toast */
-    .toast{
-      position:fixed; left:50%; bottom:22px; transform:translateX(-50%) translateY(16px);
-      background:rgba(19,29,56,.95); color:var(--text);
-      border:1px solid rgba(34,211,238,.45); box-shadow:var(--shadow-neon);
-      padding:10px 14px; border-radius:12px; opacity:0; transition:all .18s ease; z-index:50;
-    }
-    .toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
-    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-  </style>
-</head>
-<body>
-  <div class="backdrop" aria-hidden="true"></div>
-  <div class="wrap">
-    <main class="app">
-      <h1 class="title">Профиль</h1>
-
-      <form id="profileForm" class="card" novalidate>
-        <div class="grid">
-          <!-- Имя -->
-          <div class="field" id="f-firstname">
-            <input class="control" type="text" id="firstName" name="firstName" placeholder=" " autocomplete="given-name" required />
-            <label for="firstName">Имя</label>
-            <div class="error-msg">Укажите имя.</div>
-          </div>
-
-          <!-- Фамилия -->
-          <div class="field">
-            <input class="control" type="text" id="lastName" name="lastName" placeholder=" " autocomplete="family-name" />
-            <label for="lastName">Фамилия</label>
-          </div>
-
-          <!-- Отчество -->
-          <div class="field">
-            <input class="control" type="text" id="middleName" name="middleName" placeholder=" " />
-            <label for="middleName">Отчество</label>
-          </div>
-
-          <!-- Дата рождения (текст с маской ДД.ММ.ГГГГ) -->
-          <div class="field" id="f-birth">
-            <input class="control" type="text" id="birthDate" name="birthDate" inputmode="numeric" placeholder=" " aria-describedby="birthHint" maxlength="10" required />
-            <label for="birthDate">Дата рождения</label>
-            <div class="hint" id="birthHint">Формат: ДД.ММ.ГГГГ</div>
-            <div class="error-msg">Укажите дату рождения в формате ДД.ММ.ГГГГ.</div>
-          </div>
-
-          <!-- Email -->
-          <div class="field" id="f-email">
-            <input class="control" type="email" id="email" name="email" placeholder=" " autocomplete="email" required />
-            <label for="email">Email</label>
-            <div class="error-msg">Введите корректный email.</div>
-          </div>
-
-          <!-- Пол: pill radio -->
-          <div class="field" id="f-gender">
-            <span class="sr-only" id="genderLabel">Пол</span>
-            <div class="pills" role="radiogroup" aria-labelledby="genderLabel">
-              <label class="pill"><input type="radio" name="gender" value="male">Мужской</label>
-              <label class="pill"><input type="radio" name="gender" value="female">Женский</label>
-              <label class="pill"><input type="radio" name="gender" value="other">Другое</label>
-            </div>
-            <div class="error-msg">Выберите вариант.</div>
-          </div>
-
-          <!-- Откуда узнали -->
-          <div class="field select">
-            <select id="source" name="source">
-              <option value="" selected disabled>Выберите вариант</option>
-              <option>Друзья/знакомые</option>
-              <option>Телеграм/чаты</option>
-              <option>Реклама</option>
-              <option>Проходил мимо</option>
-              <option>Другое</option>
-            </select>
-            <label for="source" style="position:absolute;left:14px;top:-8px;font-size:12px;color:var(--muted)">Откуда вы узнали о нас?</label>
-            <svg class="chev" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-        </div>
-
-        <div class="actions">
-          <button type="button" class="btn ghost" id="clearBtn">Очистить</button>
-          <button type="submit" class="btn" id="saveBtn">Сохранить</button>
-        </div>
-      </form>
-
-      <div class="meta">@Vapes_Catalog_Bot</div>
-    </main>
-  </div>
-
-  <div class="toast" id="toast" role="status" aria-live="polite">Сохранено ✓</div>
-
-  <script>
-    // =============== Helpers ===============
-    const $ = (s, p=document)=>p.querySelector(s)
-    const $$ = (s, p=document)=>[...p.querySelectorAll(s)]
-    const tg = window.Telegram ? window.Telegram.WebApp : null
-
-    // =============== Theme mapping ===============
-    function applyTelegramTheme(){
-      if(!tg || !tg.themeParams) return
-      const t = tg.themeParams
-      // некоторые клиенты прокидывают только JS-параметры — маппим в CSS-переменные
-      const root = document.documentElement.style
-      const bg = t.bg_color || '#0A0F1E'
-      const text = t.text_color || '#E5F0FF'
-      const hint = t.hint_color || '#91A4C7'
-      const button = t.button_color || '#22D3EE'
-      root.setProperty('--bg-0', bg)
-      root.setProperty('--text', text)
-      root.setProperty('--muted', hint)
-      root.setProperty('--accent', button)
-    }
-
-    // =============== Radio pills ===============
-    function initPills(){
-      const group = $('#f-gender .pills')
-      group.addEventListener('change', () => {
-        $$('#f-gender .pill').forEach(l => l.classList.remove('active'))
-        const active = group.querySelector('input:checked')
-        if(active) active.parentElement.classList.add('active')
-        $('#f-gender').classList.remove('error')
-      })
-    }
-
-    // =============== Date mask (ДД.ММ.ГГГГ) ===============
-    function maskDateInput(el){
-      el.addEventListener('input', (e)=>{
-        let v = el.value.replace(/\D/g,'').slice(0,8)
-        if(v.length >= 5) v = v.replace(/^(\d{2})(\d{2})(\d{1,4}).*/, '$1.$2.$3')
-        else if(v.length >= 3) v = v.replace(/^(\d{2})(\d{1,2}).*/, '$1.$2')
-        el.value = v
-        $('#f-birth').classList.remove('error')
-      })
-    }
-
-    // =============== Validation ===============
-    function validate(form){
-      let ok = true
-      // имя
-      const first = $('#firstName')
-      if(!first.value.trim()){
-        $('#f-firstname').classList.add('error'); ok = false
-      } else { $('#f-firstname').classList.remove('error') }
-
-      // дата
-      const bd = $('#birthDate')
-      const rexDate = /^([0-2]\d|3[01])\.(0\d|1[0-2])\.(19|20)\d{2}$/
-      if(!rexDate.test(bd.value.trim())){
-        $('#f-birth').classList.add('error'); ok = false
-      } else { $('#f-birth').classList.remove('error') }
-
-      // email
-      const em = $('#email')
-      const rexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
-      if(!rexEmail.test(em.value.trim())){
-        $('#f-email').classList.add('error'); ok = false
-      } else { $('#f-email').classList.remove('error') }
-
-      // gender
-      if(!form.gender.value){
-        $('#f-gender').classList.add('error'); ok = false
-      } else { $('#f-gender').classList.remove('error') }
-
-      return ok
-    }
-
-    // =============== Toast ===============
-    function toast(msg='Сохранено ✓'){
-      const t = $('#toast')
-      t.textContent = msg
-      t.classList.add('show')
-      setTimeout(()=>t.classList.remove('show'), 1600)
-    }
-
-    // =============== Telegram Main Button wiring ===============
-    function setupTelegramMainButton(){
-      if(!tg) return
-      tg.ready()
-      tg.expand()
-      tg.MainButton.setParams({ text: 'Сохранить', color: getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#22D3EE', text_color: '#0B1020' })
-      tg.MainButton.onClick(()=> $('#profileForm').requestSubmit())
-      tg.MainButton.show()
-      tg.onEvent('themeChanged', applyTelegramTheme)
-      applyTelegramTheme()
-    }
-
-    // =============== Submit ===============
-    const form = $('#profileForm')
-    form.addEventListener('submit', (e)=>{
-      e.preventDefault()
-      if(!validate(form)) return
-      const data = {
-        firstName: form.firstName.value.trim(),
-        lastName: form.lastName.value.trim(),
-        middleName: form.middleName.value.trim(),
-        birthDate: form.birthDate.value.trim(),
-        email: form.email.value.trim(),
-        gender: form.gender.value,
-        source: form.source.value
-      }
-
-      // Если внутри Telegram — отправляем данные в bot через sendData
-      if(tg){
-        tg.sendData(JSON.stringify({type:'profile', payload:data}))
-      }
-      toast()
-    })
-
-    // очистка
-    $('#clearBtn').addEventListener('click', ()=>{
-      form.reset()
-      $$('#profileForm .field').forEach(f=>f.classList.remove('error'))
-      $$('#f-gender .pill').forEach(l => l.classList.remove('active'))
-    })
-
-    // init on load
-    maskDateInput($('#birthDate'))
-    initPills()
-    setupTelegramMainButton()
-  </script>
-</body>
-</html>
+      position:absolute;left:14px;top:var(--label-rest-top);
+      color:var(--muted);font-size:14px;pointer-events:none;transition:all .16s ease;
+      padding:0 2px; /* только для аккуратной оптики, без фона *
