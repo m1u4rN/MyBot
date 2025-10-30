@@ -6,14 +6,14 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <title>Vape Bot — История</title>
+  <title>Vape Bot — Чат</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root{
       --bg-0:#0A0F1E; --bg-1:#0F172A; --text:#E5F0FF; --muted:#91A4C7;
       --accent:#22D3EE; --radius:16px; --tab-h:64px;
-      --shadow-neon:0 8px 30px rgba(2,12,27,.55);
+      --shadow-neon:0 0 0 1px rgba(34,211,238,.35),0 0 24px rgba(34,211,238,.2);
     }
     *,*::before,*::after{box-sizing:border-box}
     html,body{height:100%}
@@ -23,15 +23,23 @@
       -webkit-font-smoothing:antialiased;
       padding-bottom: calc(var(--tab-h) + env(safe-area-inset-bottom, 0px) + 8px);
     }
-    .page{max-width:720px;margin:0 auto;padding:16px}
-    .item{
+    .page{max-width:720px;margin:0 auto;padding:16px; display:flex; flex-direction:column; gap:12px}
+    .chat{
+      flex:1; min-height:48vh;
       background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));
       border:1px solid rgba(255,255,255,.06);
       border-radius:calc(var(--radius) + 6px);
-      padding:14px 16px; margin-bottom:10px; box-shadow:var(--shadow-neon);
-      display:flex; justify-content:space-between; align-items:center;
+      padding:12px;
+      overflow:auto;
     }
-    .muted{color:var(--muted);font-size:12px}
+    .msg{max-width:80%; padding:10px 12px; border-radius:14px; margin:6px 0}
+    .me{margin-left:auto; background:rgba(34,211,238,.16); box-shadow:var(--shadow-neon)}
+    .bot{background:var(--bg-1); border:1px solid rgba(255,255,255,.06)}
+    .composer{display:flex; gap:8px}
+    .composer input{
+      flex:1; padding:12px 14px; border-radius:14px; border:1px solid rgba(255,255,255,.07); background:var(--bg-1); color:var(--text); outline:none;
+    }
+    .composer button{padding:12px 16px; border-radius:14px; border:0; background:linear-gradient(180deg,rgba(34,211,238,.18),rgba(167,139,250,.16)); color:var(--text); font-weight:600; box-shadow:var(--shadow-neon); cursor:pointer}
     /* tabbar */
     .tabbar{position:fixed;left:0;right:0;bottom:0;background:rgba(8,12,22,.8);border-top:1px solid rgba(255,255,255,.06);backdrop-filter:blur(10px);display:flex;justify-content:space-around;align-items:center;height:var(--tab-h);padding:8px 8px calc(8px + env(safe-area-inset-bottom, 0px));z-index:50}
     .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;color:var(--muted);font-size:12px;font-weight:600;padding:8px 0;border-radius:10px;transition:color .15s, background .15s}
@@ -42,17 +50,13 @@
 </head>
 <body>
   <main class="page">
-    <div class="item">
-      <div><strong>Покупка #1023</strong><div class="muted">03.10 • Магазин «Центр»</div></div>
-      <div>1 240 ₽</div>
+    <div class="chat" id="chatBox">
+      <div class="msg bot">Привет! Это чат с магазином. Чем помочь?</div>
+      <div class="msg me">Хочу узнать, есть ли сегодня акция.</div>
     </div>
-    <div class="item">
-      <div><strong>Начисление баллов</strong><div class="muted">28.09 • +120 баллов</div></div>
-      <div>+120</div>
-    </div>
-    <div class="item">
-      <div><strong>Покупка #1012</strong><div class="muted">20.09 • Магазин «Юг»</div></div>
-      <div>980 ₽</div>
+    <div class="composer">
+      <input id="msg" type="text" placeholder="Сообщение..." />
+      <button id="sendBtn">Отправить</button>
     </div>
   </main>
 
@@ -61,11 +65,11 @@
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M9 6l-5 2v10l5-2 6 2 5-2V6l-5 2-6-2z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
       <span>Карта</span>
     </a>
-    <a class="tab active" href="history.html" aria-selected="true">
+    <a class="tab" href="history.html">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M6 4h12v16H6zM9 8h6M9 12h6M9 16h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
       <span>История</span>
     </a>
-    <a class="tab" href="chat.html">
+    <a class="tab active" href="chat.html" aria-selected="true">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M20 12a7 7 0 0 1-7 7H6l-2 3V12a7 7 0 1 1 16 0z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
       <span>Чат</span>
     </a>
@@ -90,6 +94,17 @@
       if(t.button_color) r.setProperty('--accent', t.button_color);
     }
     if(tg){ tg.ready(); tg.expand(); tg.onEvent('themeChanged', applyTelegramTheme); applyTelegramTheme(); }
+
+    // простая имитация отправки
+    const box = document.getElementById('chatBox');
+    document.getElementById('sendBtn').onclick = ()=>{
+      const inp = document.getElementById('msg');
+      const t = inp.value.trim();
+      if(!t) return;
+      const b = document.createElement('div');
+      b.className='msg me'; b.textContent=t; box.appendChild(b); inp.value='';
+      box.scrollTop = box.scrollHeight;
+    };
   </script>
 </body>
 </html>
