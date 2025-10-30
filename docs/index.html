@@ -6,181 +6,206 @@
   <meta name="color-scheme" content="dark light" />
   <title>Профиль</title>
   <style>
+    /* ====== Токены (автоперекрасятся из Telegram.WebApp.themeParams) ====== */
     :root{
-      --bg:#0f1115;
-      --surface:#14171c;
+      --bg:#0e1013;
       --text:#e7e9ec;
       --muted:#9aa3ad;
-      --divider:rgba(255,255,255,.08);
+      --surface:#14171b;   /* фон панели */
+      --line:rgba(255,255,255,.10);
       --accent:#50a8eb;
-      --accent-30:rgba(80,168,235,.30);
-      --danger:#ff6b6b;
-      --radius:12px;
-      --gap:16px;
+      --accent-text:#ffffff;
+
+      --r:12px;            /* скругления */
+      --gap:16px;          /* базовый шаг */
     }
+
+    /* ====== База ====== */
     *{box-sizing:border-box}
     body{
-      margin:0;background:var(--bg);color:var(--text);
+      margin:0; background:var(--bg); color:var(--text);
       font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
     }
-    .wrap{max-width:640px;margin:0 auto;padding:24px}
-    h1{margin:0 0 16px;font-size:24px;font-weight:700}
+    .wrap{max-width:680px; margin:0 auto; padding:20px}
+    h1{margin:0 0 14px;font-size:22px;font-weight:700}
 
-    /* group (карточка без тени и градиентов) */
-    .group{
+    /* ====== Панель без теней/градиентов ====== */
+    .panel{
+      border:1px solid var(--line);
       background:var(--surface);
-      border:1px solid var(--divider);
-      border-radius:16px;
+      border-radius:var(--r);
       padding:18px;
     }
 
-    .grid{display:grid;gap:var(--gap);grid-template-columns:1fr 1fr}
-    .full{grid-column:1 / -1}
+    /* ====== Сетка ====== */
+    .grid{display:grid; grid-template-columns:1fr 1fr; gap:var(--gap)}
+    .full{grid-column:1/-1}
+    @media (max-width:640px){ .grid{grid-template-columns:1fr} }
 
-    .label{font-size:13px;color:var(--muted);margin-bottom:6px}
-
-    :where(input,select){
-      width:100%;height:44px;padding:0 14px;
-      border-radius:var(--radius);
-      border:1px solid var(--divider);
-      background:transparent;color:var(--text);
-      outline:none;transition:border-color .15s, box-shadow .15s;
+    /* ====== Поля ====== */
+    .field{display:flex; flex-direction:column; gap:6px}
+    .label{font-size:12px; color:var(--muted)}
+    input, select{
+      width:100%; padding:12px 14px;
+      border-radius:10px; border:1px solid var(--line);
+      background:#0f1216; color:var(--text); outline:0;
+      transition:border-color .15s, box-shadow .15s, background .15s;
     }
     input::placeholder{color:rgba(255,255,255,.35)}
-    :where(input,select):focus{
-      border-color:var(--accent);
-      box-shadow:0 0 0 3px var(--accent-30);
+    input:focus, select:focus{
+      border-color:color-mix(in oklab, var(--accent), white 10%);
+      box-shadow:0 0 0 3px color-mix(in oklab, var(--accent) 28%, transparent);
     }
-    :where(input,select):user-invalid{border-color:var(--danger)}
 
-    /* segmented control */
-    .seg{border:none;margin:4px 0 8px;padding:0}
-    .seg legend{font-size:13px;color:var(--muted);margin:0 0 6px}
-    .seg-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-    .seg input{display:none}
-    .seg label{
-      display:flex;align-items:center;justify-content:center;
-      height:40px;border-radius:999px;cursor:pointer;user-select:none;
-      border:1px solid var(--divider); background:transparent;
+    /* Валидация — минимально, без красных заливок */
+    input:user-invalid, select:user-invalid{border-color:#f36d6d}
+    .hint{font-size:12px; color:var(--muted)}
+
+    /* ====== Сегмент для пола (капсулы) ====== */
+    .segmented{border:none; padding:0; margin:8px 0 0}
+    .segmented legend{font-size:12px; color:var(--muted); margin-bottom:8px}
+    .segmented input{display:none}
+    .segmented .row{display:grid; grid-template-columns:repeat(3,1fr); gap:10px}
+    .segmented label{
+      text-align:center; padding:10px 12px; border-radius:999px;
+      background:#0f1216; border:1px solid var(--line); cursor:pointer; user-select:none;
+      transition:background .15s, border-color .15s;
     }
-    .seg input:checked + label{background:var(--accent);color:#fff;border-color:var(--accent)}
+    .segmented input:checked + label{
+      background:var(--accent); color:var(--accent-text);
+      border-color:color-mix(in oklab, var(--accent), white 10%);
+    }
 
-    /* select arrow */
+    /* ====== Select без визуального мусора ====== */
     select{
       appearance:none;
       background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-      background-repeat:no-repeat;background-position:right 10px center;padding-right:36px;
+      background-repeat:no-repeat; background-position:right 10px center; padding-right:36px;
       opacity:.95;
     }
 
-    .mb{margin-top:6px}
-    .ghost{display:none} /* в обычном браузере покажем ниже */
-
-    @media (max-width:680px){ .grid{grid-template-columns:1fr} }
+    /* Запасная кнопка для браузера (в Telegram скрыта) */
+    .fallback{display:none; margin-top:var(--gap)}
+    .btn{
+      padding:12px 16px; border-radius:10px; border:1px solid var(--line);
+      background:var(--accent); color:var(--accent-text); font-weight:600; cursor:pointer;
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
     <h1>Профиль</h1>
 
-    <form id="profileForm" class="group" novalidate>
-      <div class="grid">
-        <div>
-          <div class="label">Имя *</div>
-          <input required name="first_name" placeholder="Макс" autocomplete="given-name">
-        </div>
-        <div>
-          <div class="label">Фамилия</div>
-          <input name="last_name" autocomplete="family-name">
+    <div class="panel">
+      <form id="profileForm" novalidate>
+        <div class="grid">
+          <label class="field">
+            <span class="label">Имя *</span>
+            <input name="first_name" placeholder="Макс" required autocomplete="given-name">
+          </label>
+
+          <label class="field">
+            <span class="label">Фамилия</span>
+            <input name="last_name" autocomplete="family-name">
+          </label>
+
+          <label class="field">
+            <span class="label">Отчество</span>
+            <input name="middle_name">
+          </label>
+
+          <label class="field">
+            <span class="label">Дата рождения *</span>
+            <input name="birthdate" inputmode="numeric" placeholder="дд.мм.гггг"
+                   pattern="\d{2}\.\d{2}\.\d{4}" required>
+          </label>
+
+          <label class="field full">
+            <span class="label">Email *</span>
+            <input type="email" name="email" placeholder="name@example.com" autocomplete="email" required>
+          </label>
         </div>
 
-        <div>
-          <div class="label">Отчество</div>
-          <input name="middle_name">
-        </div>
-        <div>
-          <div class="label">Дата рождения *</div>
-          <input required name="birthdate" inputmode="numeric" placeholder="дд.мм.гггг" pattern="\d{2}\.\d{2}\.\d{4}">
-        </div>
+        <fieldset class="segmented">
+          <legend>Пол *</legend>
+          <div class="row">
+            <input id="g_m" type="radio" name="gender" value="m" required>
+            <label for="g_m">Мужской</label>
 
-        <div class="full">
-          <div class="label">Email *</div>
-          <input required type="email" name="email" placeholder="name@example.com" autocomplete="email">
-        </div>
-      </div>
+            <input id="g_f" type="radio" name="gender" value="f">
+            <label for="g_f">Женский</label>
 
-      <fieldset class="seg full">
-        <legend>Пол *</legend>
-        <div class="seg-row">
-          <input type="radio" id="g_m" name="gender" value="m" required>
-          <label for="g_m">Мужской</label>
-          <input type="radio" id="g_f" name="gender" value="f">
-          <label for="g_f">Женский</label>
-          <input type="radio" id="g_o" name="gender" value="o">
-          <label for="g_o">Другое</label>
-        </div>
-      </fieldset>
+            <input id="g_o" type="radio" name="gender" value="o">
+            <label for="g_o">Другое</label>
+          </div>
+        </fieldset>
 
-      <div class="full mb">
-        <div class="label">Откуда вы узнали о нас?</div>
-        <select name="source">
-          <option value="" selected disabled>Выберите вариант</option>
-          <option>Друзья</option><option>Реклама</option><option>Поиск</option><option>Другое</option>
-        </select>
-      </div>
+        <label class="field full" style="margin-top:10px">
+          <span class="label">Откуда вы узнали о нас?</span>
+          <select name="source">
+            <option value="" selected disabled>Выберите вариант</option>
+            <option>Друзья</option>
+            <option>Реклама</option>
+            <option>Поиск</option>
+            <option>Другое</option>
+          </select>
+        </label>
 
-      <button type="submit" class="ghost">Сохранить</button>
-    </form>
+        <div class="fallback"><button class="btn" type="submit">Сохранить</button></div>
+      </form>
+    </div>
   </div>
 
   <script>
-    const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+    // ====== Telegram theme hookup ======
+    const TG = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
 
-    // convert HEX->rgba for accent ring
-    function rgba(hex, a=0.3){
+    const hex2rgba = (hex, a=1)=>{
       if(!hex) return null;
-      let c=hex.replace('#',''); if(c.length===3) c=c.split('').map(x=>x+x).join('');
-      const n=parseInt(c,16); const r=(n>>16)&255,g=(n>>8)&255,b=n&255;
+      let c = hex.replace('#',''); if(c.length===3) c = c.split('').map(x=>x+x).join('');
+      const n = parseInt(c,16); const r=(n>>16)&255, g=(n>>8)&255, b=n&255;
       return `rgba(${r},${g},${b},${a})`;
-    }
+    };
 
     function applyTheme(){
-      const p = (tg && tg.themeParams) || {};
-      const map = {
+      const p = (TG && TG.themeParams) || {};
+      const vars = {
         '--bg': p.bg_color,
-        '--surface': p.secondary_bg_color,
         '--text': p.text_color,
         '--muted': p.hint_color,
-        '--divider': p.section_separator_color ? rgba(p.section_separator_color, .25) : null,
+        '--surface': p.secondary_bg_color,
+        '--line': p.section_separator_color ? hex2rgba(p.section_separator_color,.22) : null,
         '--accent': p.button_color,
+        '--accent-text': p.button_text_color
       };
-      for(const [k,v] of Object.entries(map)){ if(v) document.documentElement.style.setProperty(k, v); }
-      if (p.button_color) document.documentElement.style.setProperty('--accent-30', rgba(p.button_color, .30));
+      for (const [k,v] of Object.entries(vars)) if (v) document.documentElement.style.setProperty(k, v);
     }
     applyTheme();
-    tg && tg.onEvent('themeChanged', applyTheme);
+    TG && TG.onEvent('themeChanged', applyTheme);
 
+    // ====== Form + MainButton ======
     const form = document.getElementById('profileForm');
-    if (tg){
-      tg.expand();
-      tg.MainButton.setText('Сохранить');
-      tg.MainButton.show();
-      tg.MainButton.onClick(()=>form.requestSubmit());
+
+    if (TG){
+      TG.expand();
+      TG.MainButton.setText('Сохранить');
+      TG.MainButton.show();
+      TG.MainButton.onClick(()=> form.requestSubmit());
     } else {
-      document.querySelector('.ghost').style.display='inline-flex';
+      document.querySelector('.fallback').style.display='block';
     }
 
     form.addEventListener('submit', (e)=>{
       e.preventDefault();
       if(!form.checkValidity()){
         form.reportValidity();
-        tg && tg.HapticFeedback.notificationOccurred('error');
+        TG && TG.HapticFeedback.notificationOccurred('error');
         return;
       }
       const data = Object.fromEntries(new FormData(form).entries());
-      if (tg && tg.sendData) tg.sendData(JSON.stringify(data));
-      tg && tg.HapticFeedback.notificationOccurred('success');
-      if (tg) tg.close(); else alert('Готово');
+      if (TG && typeof TG.sendData === 'function') TG.sendData(JSON.stringify(data));
+      TG && TG.HapticFeedback.notificationOccurred('success');
+      if (TG) TG.close(); else alert('Готово!');
       console.log('Form data:', data);
     });
   </script>
